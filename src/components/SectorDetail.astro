@@ -1,0 +1,192 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, type Lang } from '../i18n/ui.ts';
+import type { Sector } from '../data/sectors.ts';
+interface Props {
+  lang: Lang;
+  sector: Sector;
+  compact?: boolean;
+}
+const { lang, sector, compact = false } = Astro.props;
+const ui = t(lang).sectors;
+const c = sector.content[lang];
+const Heading = compact ? 'h3' : 'h2';
+---
+
+<div class:list={['sd', { 'sd--page': !compact }]}>
+  {
+    compact && (
+      <div class="sd-head">
+        <span class="icon-tile"><Icon name={sector.icon} /></span>
+        <div>
+          <h3 class="h3">{c.name}</h3>
+          <p class="muted sd-tag">{c.tagline}</p>
+        </div>
+      </div>
+    )
+  }
+  <div class="sd-grid">
+    <div class="sd-block">
+      <Heading class="sd-h"><span class="sd-dot sd-dot--red"></span>{ui.problems}</Heading>
+      <ul class="sd-list">{c.problems.map((p) => <li>{p}</li>)}</ul>
+    </div>
+    <div class="sd-block">
+      <Heading class="sd-h"><span class="sd-dot"></span>{ui.processes}</Heading>
+      <ul class="sd-list sd-list--check">{c.processes.map((p) => <li><Icon name="check" size={16} />{p}</li>)}</ul>
+    </div>
+    <div class="sd-block sd-block--wide">
+      <Heading class="sd-h"><span class="sd-dot sd-dot--blue"></span>{ui.agents}</Heading>
+      <ul class="sd-agents">
+        {
+          c.agents.map((a) => (
+            <li>
+              <span class="sd-agent-ic"><Icon name="agent" size={18} /></span>
+              <div>
+                <strong>{a.n}</strong>
+                <p>{a.d}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="sd-block sd-block--wide">
+      <Heading class="sd-h"><span class="sd-dot sd-dot--green"></span>{ui.benefits}</Heading>
+      <ul class="sd-benefits">{c.benefits.map((b) => <li>{b}</li>)}</ul>
+    </div>
+  </div>
+</div>
+
+<style>
+  .sd-head {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .sd-tag {
+    margin-top: 6px;
+    font-size: 16px;
+  }
+  .sd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 36px;
+  }
+  .sd-block--wide {
+    grid-column: 1 / -1;
+  }
+  .sd-h {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .sd-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .sd-dot--red {
+    background: var(--danger);
+  }
+  .sd-dot--blue {
+    background: var(--blue);
+  }
+  .sd-dot--green {
+    background: var(--ok);
+  }
+  .sd-list li {
+    position: relative;
+    padding: 9px 0 9px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15.5px;
+    color: var(--muted);
+  }
+  .sd-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 19px;
+    width: 6px;
+    height: 1.5px;
+    background: var(--muted-2);
+  }
+  .sd-list--check li {
+    display: flex;
+    gap: 10px;
+    padding-left: 0;
+    color: var(--text);
+  }
+  .sd-list--check li::before {
+    display: none;
+  }
+  .sd-list--check li :global(svg) {
+    flex: none;
+    margin-top: 4px;
+    color: var(--accent-2);
+  }
+  .sd-agents {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .sd-agents li {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .sd-agent-ic {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--blue-soft);
+    color: #8fb6ff;
+  }
+  .sd-agents strong {
+    display: block;
+    font-size: 15px;
+  }
+  .sd-agents p {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .sd-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sd-benefits li {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(61, 220, 151, 0.3);
+    background: rgba(61, 220, 151, 0.06);
+    color: #9ff0c9;
+    font-size: 14px;
+  }
+  .sd--page .sd-h {
+    font-size: 13px;
+  }
+  @media (max-width: 760px) {
+    .sd-grid {
+      grid-template-columns: 1fr;
+    }
+    .sd-agents {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,125 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const ui = t(Astro.props.lang).problem;
+const icons = ['clock', 'message', 'target', 'gears', 'plug', 'trend'];
+---
+
+<section class="section problem" id="problema" aria-labelledby="problem-title">
+  <div class="container problem-grid">
+    <div class="problem-head">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="problem-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+    </div>
+    <ol class="problem-list">
+      {
+        ui.items.map((it, i) => (
+          <li class="p-item reveal" style={`--d:${i % 3}`}>
+            <span class="p-num">0{i + 1}</span>
+            <span class="p-icon"><Icon name={icons[i]} /></span>
+            <div>
+              <h3 class="p-t">{it.t}</h3>
+              <p class="p-d">{it.d}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+  <div class="container">
+    <p class="problem-close reveal">
+      <span>{ui.closingA}</span>
+      <span class="gradient-text">{ui.closingB}</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: clamp(40px, 7vw, 120px);
+    align-items: start;
+  }
+  .problem-head {
+    position: sticky;
+    top: calc(var(--nav-h) + 48px);
+    display: grid;
+    gap: 22px;
+  }
+  .problem-head .h2 {
+    font-size: clamp(32px, 4vw, 56px);
+  }
+  .problem-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .p-item {
+    display: grid;
+    grid-template-columns: 40px 48px 1fr;
+    gap: 18px;
+    align-items: start;
+    padding: 30px 0;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.3s;
+  }
+  .p-num {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted-2);
+    padding-top: 4px;
+  }
+  .p-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--line-2);
+    color: var(--accent-2);
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .p-item:hover .p-icon {
+    background: var(--accent-soft);
+    border-color: rgba(255, 90, 31, 0.4);
+  }
+  .p-t {
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  .p-d {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .problem-close {
+    display: grid;
+    margin-top: clamp(80px, 11vw, 150px);
+    font-size: clamp(30px, 4.6vw, 64px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-align: center;
+    text-wrap: balance;
+  }
+  @media (max-width: 900px) {
+    .problem-grid {
+      grid-template-columns: 1fr;
+    }
+    .problem-head {
+      position: static;
+    }
+    .p-item {
+      grid-template-columns: 44px 1fr;
+    }
+    .p-num {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,121 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+import { services } from '../data/services.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang).services;
+---
+
+<section class="section section--graphite" id="servicios" aria-labelledby="services-title">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="services-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+      <p class="lead reveal" style="--d:2">{ui.intro}</p>
+    </div>
+    <ul class="svc-grid">
+      {
+        services.map((s, i) => {
+          const c = s.content[lang];
+          return (
+            <li class="reveal" style={`--d:${i % 3}`}>
+              <a class="card card--spot svc" href={routes[lang].service(s.slug[lang])} data-tilt>
+                <div class="svc-top">
+                  <span class="icon-tile"><Icon name={s.icon} /></span>
+                  <span class="svc-num">0{i + 1}</span>
+                </div>
+                <h3 class="h3 svc-title">{c.title}</h3>
+                <p class="svc-desc">{c.short}</p>
+                <span class="link-arrow svc-more">{ui.more}<Icon name="arrow" /></span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  // Inclinación 3D sutil en tarjetas (solo punteros finos)
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !document.documentElement.classList.contains('reduced')) {
+    document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = `perspective(900px) rotateX(${-y * 5}deg) rotateY(${x * 6}deg) translateY(-4px)`;
+      });
+      el.addEventListener('pointerleave', () => (el.style.transform = ''));
+    });
+  }
+</script>
+
+<style>
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .svc-grid li {
+    display: flex;
+  }
+  .svc {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 330px;
+    padding: 32px;
+    transition: transform 0.5s var(--ease), border-color 0.3s;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .svc:hover {
+    border-color: var(--line-2);
+  }
+  .svc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+  .svc-num {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted-2);
+  }
+  .svc-title {
+    max-width: 15ch;
+  }
+  .svc-desc {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .svc-more {
+    margin-top: auto;
+    padding-top: 28px;
+    color: var(--accent-2);
+  }
+  @media (max-width: 1024px) {
+    .svc-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .svc-grid {
+      grid-template-columns: 1fr;
+    }
+    .svc {
+      min-height: 0;
+      padding: 26px;
+    }
+    .svc-top {
+      margin-bottom: 28px;
+    }
+  }
+</style>

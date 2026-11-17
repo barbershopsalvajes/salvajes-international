@@ -1,0 +1,165 @@
+---
+import Icon from './ui/Icon.astro';
+import DemoReceptionist from './demos/DemoReceptionist.astro';
+import DemoSales from './demos/DemoSales.astro';
+import DemoAdmin from './demos/DemoAdmin.astro';
+import { t, type Lang } from '../i18n/ui.ts';
+import '../styles/demos.css';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang).demos;
+const icons = ['chat', 'funnel', 'file'];
+---
+
+<section class="section demos" id="demos" aria-labelledby="demos-title">
+  <div class="demos-glow" aria-hidden="true"></div>
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="demos-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+      <p class="lead reveal" style="--d:2">{ui.intro}</p>
+    </div>
+
+    <div class="tabs reveal" role="tablist" aria-label={ui.eyebrow} data-demo-tabs>
+      {
+        ui.tabs.map((label, i) => (
+          <button
+            class="tab"
+            role="tab"
+            id={`demo-tab-${i}`}
+            aria-controls={`demo-panel-${i}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            type="button"
+          >
+            <Icon name={icons[i]} size={18} />
+            <span class="tab-letter">{String.fromCharCode(65 + i)}</span>
+            <span>{label}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="demo-stage card reveal">
+      <div role="tabpanel" id="demo-panel-0" aria-labelledby="demo-tab-0" class="demo-panel">
+        <DemoReceptionist lang={lang} />
+      </div>
+      <div role="tabpanel" id="demo-panel-1" aria-labelledby="demo-tab-1" class="demo-panel" hidden>
+        <DemoSales lang={lang} />
+      </div>
+      <div role="tabpanel" id="demo-panel-2" aria-labelledby="demo-tab-2" class="demo-panel" hidden>
+        <DemoAdmin lang={lang} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const list = document.querySelector<HTMLElement>('[data-demo-tabs]');
+  const tabs = list ? [...list.querySelectorAll<HTMLButtonElement>('[role="tab"]')] : [];
+  function select(i: number, focus = false) {
+    tabs.forEach((tab, k) => {
+      const on = k === i;
+      tab.setAttribute('aria-selected', String(on));
+      tab.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(tab.getAttribute('aria-controls')!);
+      if (panel) panel.hidden = !on;
+    });
+    if (focus) tabs[i].focus();
+    document.dispatchEvent(new CustomEvent('ri:demo-tab', { detail: i }));
+  }
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(i));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') select((i + 1) % tabs.length, true);
+      else if (e.key === 'ArrowLeft') select((i - 1 + tabs.length) % tabs.length, true);
+      else if (e.key === 'Home') select(0, true);
+      else if (e.key === 'End') select(tabs.length - 1, true);
+      else return;
+      e.preventDefault();
+    });
+  });
+</script>
+
+<style>
+  .demos {
+    overflow: hidden;
+  }
+  .demos-glow {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: 1100px;
+    height: 700px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(255, 90, 31, 0.12), rgba(76, 141, 255, 0.05) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 auto 24px;
+    padding: 6px;
+    width: fit-content;
+    max-width: 100%;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.03);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.3s, color 0.3s;
+  }
+  .tab:hover {
+    color: var(--text);
+  }
+  .tab[aria-selected='true'] {
+    background: var(--text);
+    color: var(--ink);
+  }
+  .tab-letter {
+    font-family: var(--mono);
+    font-size: 11px;
+    opacity: 0.6;
+  }
+  .demo-stage {
+    padding: clamp(18px, 3vw, 40px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+    box-shadow: var(--shadow);
+  }
+  .demo-panel[hidden] {
+    display: none;
+  }
+  @media (max-width: 760px) {
+    .tabs {
+      width: 100%;
+      justify-content: flex-start;
+      border-radius: 18px;
+    }
+    .tab {
+      padding: 11px 16px;
+      font-size: 14px;
+    }
+    .tab-letter {
+      display: none;
+    }
+    .demo-stage {
+      border-radius: 22px;
+    }
+  }
+</style>

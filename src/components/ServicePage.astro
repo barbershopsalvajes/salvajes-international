@@ -1,0 +1,298 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from './ui/Icon.astro';
+import CtaBand from './CtaBand.astro';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+import { site } from '../config/site.ts';
+import { services, type Service } from '../data/services.ts';
+
+interface Props {
+  lang: Lang;
+  service: Service;
+}
+const { lang, service } = Astro.props;
+const ui = t(lang);
+const c = service.content[lang];
+const r = routes[lang];
+const contactHref = `${r.home}?service=${encodeURIComponent(c.formValue)}#contacto`;
+const others = services.filter((s) => s.id !== service.id);
+const url = `${site.url}${r.service(service.slug[lang])}`;
+const ld = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: c.title,
+    description: c.seoDescription,
+    serviceType: c.title,
+    url,
+    provider: { '@id': `${site.url}/#organization` },
+    areaServed: ['ES', 'AE', 'Latin America'],
+    inLanguage: lang,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: site.name, item: `${site.url}${r.home}` },
+      { '@type': 'ListItem', position: 2, name: ui.services.eyebrow, item: `${site.url}${r.home}#servicios` },
+      { '@type': 'ListItem', position: 3, name: c.title, item: url },
+    ],
+  },
+];
+---
+
+<Base lang={lang} title={c.seoTitle} description={c.seoDescription} alternate={{ es: routes.es.service(service.slug.es), en: routes.en.service(service.slug.en) }} jsonLd={ld}>
+  <section class="page-hero">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="container">
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumbs">
+          <li><a href={r.home}>{lang === 'es' ? 'Inicio' : 'Home'}</a></li>
+          <li><a href={`${r.home}#servicios`}>{ui.services.eyebrow}</a></li>
+          <li aria-current="page">{c.title}</li>
+        </ol>
+      </nav>
+      <span class="icon-tile reveal"><Icon name={service.icon} /></span>
+      <h1 class="h1 sp-title reveal" style="--d:1">{c.title}</h1>
+      <p class="lead reveal" style="--d:2">{c.short}</p>
+      <div class="sp-ctas reveal" style="--d:3">
+        <a class="btn btn--accent" href={contactHref}>{ui.services.cta}<Icon name="arrow" /></a>
+        <a class="btn btn--ghost" href={`${r.home}#demos`}>{ui.nav.demos}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sp-sec section--graphite">
+    <div class="container sp-split">
+      <div>
+        <span class="eyebrow reveal">01 · {ui.services.problem}</span>
+        <p class="sp-problem reveal" style="--d:1">{c.problem}</p>
+      </div>
+      <ul class="sp-points">
+        {c.problemPoints.map((p, i) => <li class="reveal" style={`--d:${i}`}><Icon name="close" size={18} />{p}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section sp-sec">
+    <div class="container">
+      <span class="eyebrow reveal">02 · {ui.services.how}</span>
+      <ol class="sp-how">
+        {
+          c.how.map((h, i) => (
+            <li class="card card--spot reveal" style={`--d:${i}`}>
+              <span class="sp-n">0{i + 1}</span>
+              <h2 class="sp-h">{h.t}</h2>
+              <p>{h.d}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section sp-sec section--paper">
+    <div class="container sp-split">
+      <div>
+        <span class="eyebrow reveal">03 · {ui.services.benefits}</span>
+      </div>
+      <ul class="sp-benefits">
+        {c.benefits.map((b, i) => <li class="reveal" style={`--d:${i}`}><Icon name="check" size={20} />{b}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section sp-sec">
+    <div class="container">
+      <span class="eyebrow reveal">04 · {ui.services.example}</span>
+      <h2 class="h2 sp-ex-title reveal" style="--d:1">{c.example.title}</h2>
+      <p class="lead reveal" style="--d:2">{c.example.text}</p>
+      <ol class="sp-flow reveal" style="--d:3">
+        {c.example.flow.map((f, i) => <li><span>0{i + 1}</span>{f}</li>)}
+      </ol>
+      <a class="btn btn--accent sp-cta reveal" href={contactHref}>{ui.services.cta}<Icon name="arrow" /></a>
+    </div>
+  </section>
+
+  <section class="section section--graphite sp-sec">
+    <div class="container">
+      <h2 class="h3 reveal">{ui.services.others}</h2>
+      <ul class="sp-others">
+        {others.map((o) => (
+          <li><a class="card card--spot" href={r.service(o.slug[lang])}><Icon name={o.icon} /><span>{o.content[lang].title}</span><Icon name="arrow" size={18} /></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} href={contactHref} />
+</Base>
+
+<style>
+  .sp-title {
+    margin-top: 28px;
+    max-width: 16ch;
+    font-size: clamp(40px, 6.4vw, 92px);
+  }
+  .page-hero .lead {
+    margin-top: 24px;
+  }
+  .sp-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+  .sp-sec {
+    padding-block: clamp(72px, 9vw, 120px);
+  }
+  .sp-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .sp-problem {
+    margin-top: 24px;
+    font-size: clamp(24px, 2.6vw, 34px);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+  }
+  .sp-points li {
+    display: flex;
+    gap: 14px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .sp-points :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--danger);
+  }
+  .sp-how {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 36px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sp-how li {
+    padding: 28px;
+  }
+  .sp-n {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent-2);
+  }
+  .sp-h {
+    margin: 24px 0 10px;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+  }
+  .sp-how p {
+    color: var(--muted);
+    font-size: 15.5px;
+  }
+  .sp-benefits li {
+    display: flex;
+    gap: 14px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(11, 11, 13, 0.1);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+  .sp-benefits :global(svg) {
+    flex: none;
+    margin-top: 4px;
+    color: var(--accent);
+  }
+  .sp-ex-title {
+    margin: 22px 0 18px;
+    max-width: 20ch;
+    font-size: clamp(30px, 4vw, 52px);
+  }
+  .sp-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 40px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: f;
+  }
+  .sp-flow li {
+    position: relative;
+    padding: 22px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.03);
+    font-weight: 500;
+  }
+  .sp-flow li span {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--accent-2);
+  }
+  .sp-flow li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    width: 10px;
+    height: 2px;
+    background: var(--accent);
+  }
+  .sp-cta {
+    margin-top: 40px;
+  }
+  .sp-others {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .sp-others a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 22px;
+    font-weight: 500;
+  }
+  .sp-others a :global(svg:first-child) {
+    color: var(--accent-2);
+  }
+  .sp-others a :global(svg:last-child) {
+    margin-left: auto;
+    color: var(--muted-2);
+  }
+  @media (max-width: 960px) {
+    .sp-split {
+      grid-template-columns: 1fr;
+    }
+    .sp-how,
+    .sp-flow {
+      grid-template-columns: 1fr 1fr;
+    }
+    .sp-flow li:nth-child(2)::after {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .sp-how,
+    .sp-flow {
+      grid-template-columns: 1fr;
+    }
+    .sp-flow li::after {
+      display: none;
+    }
+    .sp-ctas .btn {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,332 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang).calc;
+const inputs = [
+  { id: 'employees', label: ui.employees, min: 1, max: 200, step: 1, value: 5, unit: '' },
+  { id: 'weeklyHours', label: ui.hours, min: 1, max: 40, step: 1, value: 10, unit: 'h' },
+  { id: 'hourlyCost', label: ui.cost, min: 8, max: 150, step: 1, value: 22, unit: '€' },
+];
+const strings = { ...ui, lang };
+---
+
+<section class="section calc" id="calculadora" aria-labelledby="calc-title">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="calc-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+      <p class="lead reveal" style="--d:2">{ui.intro}</p>
+    </div>
+
+    <div class="calc-grid reveal" data-calc data-strings={JSON.stringify(strings)}>
+      <form class="card calc-in" data-calc-form>
+        {
+          inputs.map((f) => (
+            <div class="cf">
+              <div class="cf-top">
+                <label for={`calc-${f.id}-n`}>{f.label}</label>
+                <div class="cf-num">
+                  <input class="cf-input" type="number" inputmode="decimal" id={`calc-${f.id}-n`} name={f.id} min={f.min} max={f.max * 50} step={f.step} value={f.value} data-num={f.id} />
+                  {f.unit && <span aria-hidden="true">{f.unit}</span>}
+                </div>
+              </div>
+              <input type="range" min={f.min} max={f.max} step={f.step} value={f.value} data-range={f.id} aria-label={f.label} />
+            </div>
+          ))
+        }
+        <div class="cf">
+          <div class="cf-top">
+            <span class="cf-label" id="calc-pct-label">{ui.pct}</span>
+            <output class="cf-out" data-pct-out>40%</output>
+          </div>
+          <div class="scen" role="radiogroup" aria-labelledby="calc-pct-label">
+            {[20, 40, 60].map((p) => (
+              <button type="button" role="radio" aria-checked={p === 40 ? 'true' : 'false'} data-scen={p}>{p}%</button>
+            ))}
+          </div>
+          <input type="range" min="5" max="90" step="5" value="40" data-range="automationPct" aria-labelledby="calc-pct-label" />
+        </div>
+      </form>
+
+      <div class="calc-out">
+        <div class="tiles">
+          <div class="tile">
+            <p class="tile-l">{ui.currentHours}</p>
+            <p class="tile-v" data-out="monthlyHours">–</p>
+          </div>
+          <div class="tile">
+            <p class="tile-l">{ui.monthlyCost}</p>
+            <p class="tile-v" data-out="monthlyCost">–</p>
+          </div>
+          <div class="tile">
+            <p class="tile-l">{ui.annualCost}</p>
+            <p class="tile-v" data-out="annualCost">–</p>
+          </div>
+          <div class="tile tile--hl">
+            <p class="tile-l">{ui.monthlySaving}</p>
+            <p class="tile-v" data-out="monthlySaving">–</p>
+          </div>
+          <div class="tile tile--hl tile--big">
+            <p class="tile-l">{ui.annualSaving}</p>
+            <p class="tile-v" data-out="annualSaving">–</p>
+            <p class="tile-sub"><span data-out="hoursFreedMonthly">–</span> · {ui.hoursFreed.toLowerCase()}</p>
+          </div>
+        </div>
+
+        <figure class="card chart">
+          <figcaption class="chart-head">
+            <span class="chart-title">{ui.chartTitle}</span>
+            <span class="legend">
+              <span><i class="sw sw--cost"></i>{ui.withAuto}</span>
+              <span><i class="sw sw--save"></i>{ui.saving}</span>
+            </span>
+          </figcaption>
+          <div class="chart-body" data-chart></div>
+          <div class="chart-tip" data-tip hidden role="status"></div>
+          <table class="sr-only" data-table>
+            <caption>{ui.chartTitle}</caption>
+            <thead><tr><th scope="col">{ui.scenarios}</th><th scope="col">{ui.annualCost}</th><th scope="col">{ui.saving}</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </figure>
+
+        <p class="disclaimer"><Icon name="shield" size={16} />{ui.disclaimer}</p>
+        <a href="#contacto" class="btn btn--accent calc-cta" data-calc-cta>{ui.cta}<Icon name="arrow" /></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initCalculator } from '../scripts/calculator-ui.ts';
+  const el = document.querySelector<HTMLElement>('[data-calc]');
+  if (el) initCalculator(el);
+</script>
+
+<style>
+  .calc-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .calc-in {
+    display: grid;
+    gap: 30px;
+    padding: clamp(24px, 3vw, 36px);
+  }
+  .cf {
+    display: grid;
+    gap: 10px;
+  }
+  .cf-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .cf-top label,
+  .cf-label {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+  .cf-num {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    padding: 0 12px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.03);
+    font-weight: 600;
+  }
+  .cf-num:focus-within {
+    border-color: var(--accent);
+  }
+  .cf-num span {
+    color: var(--muted);
+  }
+  .cf-input {
+    width: 64px;
+    border: 0;
+    background: transparent;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: right;
+    -moz-appearance: textfield;
+  }
+  .cf-input::-webkit-inner-spin-button,
+  .cf-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+  .cf-input:focus {
+    outline: none;
+  }
+  .cf-out {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent-2);
+  }
+  .scen {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .scen button {
+    height: 46px;
+    border-radius: 12px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.03);
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .scen button[aria-checked='true'] {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #111;
+  }
+  .calc-out {
+    display: grid;
+    gap: 16px;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .tile {
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.025);
+  }
+  .tile--hl {
+    border-color: rgba(255, 90, 31, 0.3);
+    background: linear-gradient(145deg, rgba(255, 90, 31, 0.1), rgba(255, 90, 31, 0.02));
+  }
+  .tile--big {
+    grid-column: span 2;
+  }
+  .tile-l {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .tile-v {
+    margin-top: 8px;
+    font-size: clamp(20px, 2.2vw, 28px);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tile--big .tile-v {
+    font-size: clamp(32px, 4vw, 48px);
+  }
+  .tile-sub {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .chart {
+    position: relative;
+    margin: 0;
+    padding: 22px;
+  }
+  .chart-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px 20px;
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .chart-title {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .legend {
+    display: inline-flex;
+    gap: 16px;
+  }
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  .sw--cost {
+    background: #5b84d6;
+  }
+  .sw--save {
+    background: #ec5a1c;
+  }
+  .chart-body :global(svg) {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .chart-body :global(.hit) {
+    cursor: pointer;
+  }
+  .chart-tip {
+    position: absolute;
+    pointer-events: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #1b1d22;
+    border: 1px solid var(--line-2);
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    transform: translate(-50%, -100%);
+  }
+  .chart-tip[hidden] {
+    display: none;
+  }
+  .disclaimer {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted-2);
+    line-height: 1.5;
+  }
+  .disclaimer :global(svg) {
+    flex: none;
+    margin-top: 2px;
+  }
+  .calc-cta {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+    padding-block: 12px;
+  }
+  @media (max-width: 1000px) {
+    .calc-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .tiles {
+      grid-template-columns: 1fr 1fr;
+    }
+    .tile--big {
+      grid-column: 1 / -1;
+    }
+    .tile:nth-child(3) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

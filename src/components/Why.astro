@@ -1,0 +1,64 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const ui = t(Astro.props.lang).why;
+const icons = ['target', 'layers', 'tools', 'plug', 'handshake', 'trend'];
+---
+
+<section class="section section--graphite why" id="por-que" aria-labelledby="why-title">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="why-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+    </div>
+    <ul class="why-grid">
+      {
+        ui.items.map((it, i) => (
+          <li class="card card--spot why-item reveal" style={`--d:${i % 3}`}>
+            <span class="icon-tile"><Icon name={icons[i]} /></span>
+            <h3 class="why-t">{it.t}</h3>
+            <p class="why-d">{it.d}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .why-item {
+    padding: 32px;
+  }
+  .why-t {
+    margin-top: 28px;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  .why-d {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  @media (max-width: 960px) {
+    .why-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .why-grid {
+      grid-template-columns: 1fr;
+    }
+    .why-item {
+      padding: 26px;
+    }
+  }
+</style>

@@ -1,0 +1,380 @@
+---
+import Icon from './ui/Icon.astro';
+import { site } from '../config/site.ts';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const all = t(lang);
+const ui = all.contact;
+const f = ui.fields;
+const direct = [
+  { href: site.contact.whatsappUrl, icon: 'whatsapp', label: ui.whatsapp, text: site.contact.whatsappNumber ? `+${site.contact.whatsappNumber}` : '' },
+  { href: site.contact.email ? `mailto:${site.contact.email}` : '', icon: 'mail', label: ui.email, text: site.contact.email },
+  { href: site.contact.instagram, icon: 'instagram', label: ui.instagram, text: site.contact.instagram.replace(/^https?:\/\/(www\.)?/, '') },
+  { href: site.contact.linkedin, icon: 'linkedin', label: ui.linkedin, text: site.contact.linkedin.replace(/^https?:\/\/(www\.)?/, '') },
+].filter((d) => d.href);
+const next = lang === 'es'
+  ? ['Analizamos tu caso y tus procesos actuales.', 'Te contactamos para entender los detalles.', 'Recibes propuestas concretas, sin compromiso.']
+  : ['We analyse your case and current processes.', 'We contact you to understand the details.', 'You receive concrete proposals, no strings attached.'];
+const strings = {
+  errors: ui.errors,
+  sending: ui.sending,
+  submit: ui.submit,
+  calcContext: ui.calcContext,
+  lang,
+};
+---
+
+<section class="section section--graphite contact" id="contacto" aria-labelledby="contact-title">
+  <div class="contact-glow" aria-hidden="true"></div>
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="contact-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+      <p class="lead reveal" style="--d:2">{ui.intro}</p>
+      <ol class="next reveal" style="--d:3">
+        {next.map((n, i) => <li><span>{i + 1}</span>{n}</li>)}
+      </ol>
+      {
+        direct.length > 0 && (
+          <div class="direct reveal">
+            <p class="direct-h">{ui.direct}</p>
+            <ul>
+              {direct.map((d) => (
+                <li>
+                  <a href={d.href} target={d.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" data-cta={`direct-${d.icon}`}>
+                    <Icon name={d.icon} size={20} />
+                    <span>
+                      <strong>{d.label}</strong>
+                      <small>{d.text}</small>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+
+    <div class="card form-card reveal">
+      <form id="contact-form" class="cform" novalidate data-contact data-strings={JSON.stringify(strings)} data-turnstile={site.turnstileSiteKey}>
+        <div class="grid2">
+          <div class="field">
+            <label for="cf-name">{f.name} <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="cf-name" name="name" autocomplete="name" required maxlength="100" aria-describedby="cf-name-err" />
+            <p class="field-error" id="cf-name-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="cf-company">{f.company} <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="cf-company" name="company" autocomplete="organization" required maxlength="120" aria-describedby="cf-company-err" />
+            <p class="field-error" id="cf-company-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="cf-email">{f.email} <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="cf-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="160" aria-describedby="cf-email-err" />
+            <p class="field-error" id="cf-email-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="cf-phone">{f.phone}</label>
+            <input class="input" id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="+34 …" aria-describedby="cf-phone-err" />
+            <p class="field-error" id="cf-phone-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="cf-country">{f.country} <span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="cf-country" name="country" required autocomplete="country-name" aria-describedby="cf-country-err">
+              <option value="">{f.select}</option>
+              {all.options.countries.map((o) => <option value={o}>{o}</option>)}
+            </select>
+            <p class="field-error" id="cf-country-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="cf-sector">{f.sector} <span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="cf-sector" name="sector" required aria-describedby="cf-sector-err">
+              <option value="">{f.select}</option>
+              {all.options.sectors.map((o) => <option value={o}>{o}</option>)}
+            </select>
+            <p class="field-error" id="cf-sector-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="cf-employees">{f.employees} <span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="cf-employees" name="employees" required aria-describedby="cf-employees-err">
+              <option value="">{f.select}</option>
+              {ui.employeesOpts.map((o) => <option value={o}>{o}</option>)}
+            </select>
+            <p class="field-error" id="cf-employees-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="cf-service">{f.service} <span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="cf-service" name="service" required aria-describedby="cf-service-err">
+              <option value="">{f.select}</option>
+              {all.options.services.map((o) => <option value={o}>{o}</option>)}
+            </select>
+            <p class="field-error" id="cf-service-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="cf-message">{f.message} <span class="req" aria-hidden="true">*</span></label>
+          <textarea class="textarea" id="cf-message" name="message" required maxlength="3000" placeholder={f.messagePh} aria-describedby="cf-message-err"></textarea>
+          <p class="field-error" id="cf-message-err" aria-live="polite"></p>
+        </div>
+
+        <div class="calc-ctx" data-calc-ctx hidden>
+          <Icon name="trend" size={18} />
+          <span><strong>{ui.calcContext}:</strong> <span data-calc-ctx-text></span></span>
+        </div>
+
+        <!-- Honeypot anti-spam: invisible para personas -->
+        <div class="hp" aria-hidden="true">
+          <label for="cf-website">Website</label>
+          <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label class="check">
+            <input type="checkbox" name="consent" required aria-describedby="cf-consent-err" />
+            <span>{f.consent} <a href={routes[lang].privacy} target="_blank">{f.privacy}</a> {f.consentTail} <span class="req" aria-hidden="true">*</span></span>
+          </label>
+          <p class="field-error" id="cf-consent-err" aria-live="polite"></p>
+        </div>
+        <label class="check">
+          <input type="checkbox" name="marketing" />
+          <span>{f.marketing}</span>
+        </label>
+
+        {site.turnstileSiteKey && <div class="cf-turnstile" data-sitekey={site.turnstileSiteKey} data-theme="dark" data-language={lang}></div>}
+
+        <p class="form-error" data-form-error role="alert" hidden></p>
+        <button class="btn btn--accent btn--block submit" type="submit" data-submit>
+          <span data-submit-label>{ui.submit}</span>
+          <Icon name="arrow" />
+        </button>
+        <p class="privacy-note">{ui.privacyNote}</p>
+      </form>
+
+      <div class="success" data-success hidden tabindex="-1">
+        <span class="success-ic"><Icon name="check" size={30} /></span>
+        <h3 class="h3">{ui.success.title}</h3>
+        <p class="muted">{ui.success.body}</p>
+        <p class="success-ref">{ui.success.ref}: <strong data-success-ref></strong></p>
+        <button type="button" class="btn btn--ghost" data-success-again>{ui.success.again}</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initContact } from '../scripts/contact.ts';
+  const form = document.querySelector<HTMLFormElement>('[data-contact]');
+  if (form) initContact(form);
+</script>
+
+<style>
+  .contact {
+    overflow: hidden;
+  }
+  .contact-glow {
+    position: absolute;
+    left: -200px;
+    bottom: -300px;
+    width: 900px;
+    height: 900px;
+    background: radial-gradient(circle, rgba(255, 90, 31, 0.13), transparent 60%);
+    pointer-events: none;
+  }
+  .contact-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(40px, 6vw, 90px);
+    align-items: start;
+  }
+  .contact-info {
+    display: grid;
+    gap: 22px;
+    position: sticky;
+    top: calc(var(--nav-h) + 40px);
+  }
+  .contact-info .h2 {
+    font-size: clamp(32px, 4vw, 54px);
+  }
+  .next {
+    display: grid;
+    gap: 12px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .next li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--muted);
+    font-size: 15.5px;
+  }
+  .next li span {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 90, 31, 0.4);
+    color: var(--accent-2);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .direct-h {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin: 12px 0 12px;
+  }
+  .direct ul {
+    display: grid;
+    gap: 8px;
+  }
+  .direct a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .direct a:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .direct a :global(svg) {
+    color: var(--accent-2);
+  }
+  .direct strong {
+    display: block;
+    font-size: 14.5px;
+  }
+  .direct small {
+    color: var(--muted);
+    font-size: 13px;
+    word-break: break-all;
+  }
+  .form-card {
+    padding: clamp(22px, 3.4vw, 44px);
+    box-shadow: var(--shadow);
+  }
+  .cform {
+    display: grid;
+    gap: 18px;
+  }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 16px;
+  }
+  .hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .calc-ctx {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 90, 31, 0.3);
+    background: var(--accent-soft);
+    font-size: 14px;
+  }
+  .calc-ctx[hidden] {
+    display: none;
+  }
+  .calc-ctx :global(svg) {
+    flex: none;
+    color: var(--accent-2);
+  }
+  .form-error {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 93, 93, 0.4);
+    background: rgba(255, 93, 93, 0.08);
+    color: #ffb1b1;
+    font-size: 14px;
+  }
+  .form-error[hidden] {
+    display: none;
+  }
+  .submit {
+    min-height: 58px;
+    font-size: 15px;
+  }
+  .submit.is-loading :global(svg) {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .privacy-note {
+    font-size: 12.5px;
+    color: var(--muted-2);
+    text-align: center;
+  }
+  .success {
+    display: grid;
+    justify-items: center;
+    gap: 16px;
+    padding: 40px 10px;
+    text-align: center;
+    animation: demo-pop 0.6s var(--ease) both;
+  }
+  .success[hidden] {
+    display: none;
+  }
+  .success-ic {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #111;
+    box-shadow: 0 0 0 10px rgba(255, 90, 31, 0.14), 0 0 60px rgba(255, 90, 31, 0.5);
+  }
+  .success p {
+    max-width: 440px;
+  }
+  .success-ref {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .success:focus {
+    outline: none;
+  }
+  @media (max-width: 960px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+    .contact-info {
+      position: static;
+    }
+  }
+  @media (max-width: 600px) {
+    .grid2 {
+      grid-template-columns: 1fr;
+    }
+    .form-card {
+      margin-inline: calc(var(--gutter) * -0.4);
+    }
+  }
+</style>

@@ -1,0 +1,127 @@
+/* Estilos compartidos por las demostraciones interactivas */
+.demo {
+  display: grid;
+  gap: 28px;
+}
+.demo-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.demo-head h3 {
+  font-size: clamp(22px, 2.4vw, 30px);
+  letter-spacing: -0.03em;
+}
+.demo-head p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 15.5px;
+  max-width: 560px;
+}
+.demo-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: var(--muted-2);
+  line-height: 1.5;
+}
+.demo-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--warn);
+}
+.panel {
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(6, 6, 7, 0.55);
+  padding: 22px;
+}
+.panel-title {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin-bottom: 14px;
+}
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  font-size: 14px;
+}
+.kv dt {
+  color: var(--muted-2);
+}
+.kv dd {
+  margin: 0;
+  color: var(--text);
+  font-weight: 500;
+  word-break: break-word;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge--hot,
+.badge--high {
+  background: rgba(255, 93, 93, 0.14);
+  color: #ff8a8a;
+}
+.badge--warm,
+.badge--medium {
+  background: rgba(255, 194, 75, 0.14);
+  color: var(--warn);
+}
+.badge--cold,
+.badge--low {
+  background: rgba(76, 141, 255, 0.14);
+  color: #8fb6ff;
+}
+.code {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #0a0b0d;
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #cfd3da;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow: auto;
+}
+.meter {
+  height: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.meter > span {
+  display: block;
+  height: 100%;
+  width: var(--v, 0%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 1s var(--ease);
+}
+@keyframes demo-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+.pop {
+  animation: demo-pop 0.5s var(--ease) both;
+}

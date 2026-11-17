@@ -1,0 +1,123 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from './ui/Icon.astro';
+import SectorDetail from './SectorDetail.astro';
+import CtaBand from './CtaBand.astro';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+import { site } from '../config/site.ts';
+import { sectors, type Sector } from '../data/sectors.ts';
+
+interface Props {
+  lang: Lang;
+  sector: Sector;
+}
+const { lang, sector } = Astro.props;
+const ui = t(lang);
+const c = sector.content[lang];
+const r = routes[lang];
+const contactHref = `${r.home}?sector=${encodeURIComponent(c.formValue)}#contacto`;
+const url = `${site.url}${r.sector(sector.slug[lang])}`;
+const ld = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: c.seoTitle.split(' · ')[0],
+    description: c.seoDescription,
+    url,
+    provider: { '@id': `${site.url}/#organization` },
+    audience: { '@type': 'BusinessAudience', name: c.name },
+    inLanguage: lang,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: site.name, item: `${site.url}${r.home}` },
+      { '@type': 'ListItem', position: 2, name: ui.sectors.eyebrow, item: `${site.url}${r.home}#sectores` },
+      { '@type': 'ListItem', position: 3, name: c.name, item: url },
+    ],
+  },
+];
+---
+
+<Base lang={lang} title={c.seoTitle} description={c.seoDescription} alternate={{ es: routes.es.sector(sector.slug.es), en: routes.en.sector(sector.slug.en) }} jsonLd={ld}>
+  <section class="page-hero">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="container">
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumbs">
+          <li><a href={r.home}>{lang === 'es' ? 'Inicio' : 'Home'}</a></li>
+          <li><a href={`${r.home}#sectores`}>{ui.sectors.eyebrow}</a></li>
+          <li aria-current="page">{c.name}</li>
+        </ol>
+      </nav>
+      <span class="icon-tile reveal"><Icon name={sector.icon} /></span>
+      <h1 class="h1 sec-title reveal" style="--d:1">{c.seoTitle.split(' · ')[0]}</h1>
+      <p class="lead reveal" style="--d:2">{c.tagline}</p>
+      <div class="sec-ctas reveal" style="--d:3">
+        <a class="btn btn--accent" href={contactHref}>{ui.sectors.cta}<Icon name="arrow" /></a>
+        <a class="btn btn--ghost" href={`${r.home}#demos`}>{ui.nav.demos}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--graphite">
+    <div class="container">
+      <div class="card sec-card reveal">
+        <SectorDetail lang={lang} sector={sector} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="h3 reveal">{ui.sectors.back}</h2>
+      <ul class="sec-others">
+        {sectors.filter((s) => s.id !== sector.id).map((o) => (
+          <li><a class="chip" href={r.sector(o.slug[lang])}><Icon name={o.icon} size={16} />{o.content[lang].name}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} href={contactHref} label={ui.sectors.cta} />
+</Base>
+
+<style>
+  .sec-title {
+    margin-top: 28px;
+    max-width: 18ch;
+    font-size: clamp(38px, 6vw, 84px);
+  }
+  .page-hero .lead {
+    margin-top: 24px;
+  }
+  .sec-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+  .sec-card {
+    padding: clamp(24px, 4vw, 56px);
+  }
+  .sec-others {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .sec-others .chip {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .sec-others .chip:hover {
+    border-color: var(--accent);
+  }
+  @media (max-width: 560px) {
+    .sec-ctas .btn {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,179 @@
+---
+import Icon from './ui/Icon.astro';
+import SectorDetail from './SectorDetail.astro';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+import { sectors } from '../data/sectors.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang).sectors;
+---
+
+<section class="section section--graphite" id="sectores" aria-labelledby="sectors-title">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="sectors-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+      <p class="lead reveal" style="--d:2">{ui.intro}</p>
+    </div>
+
+    <div class="sx reveal" data-sectors>
+      <div class="sx-list" role="tablist" aria-label={ui.eyebrow} aria-orientation="vertical">
+        {
+          sectors.map((s, i) => (
+            <button
+              type="button"
+              role="tab"
+              class="sx-tab"
+              id={`sx-tab-${s.id}`}
+              aria-controls={`sx-panel-${s.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              <Icon name={s.icon} size={20} />
+              <span>{s.content[lang].name}</span>
+            </button>
+          ))
+        }
+      </div>
+      <div class="sx-panels">
+        {
+          sectors.map((s, i) => (
+            <div class="card sx-panel" role="tabpanel" id={`sx-panel-${s.id}`} aria-labelledby={`sx-tab-${s.id}`} hidden={i !== 0}>
+              <SectorDetail lang={lang} sector={s} compact />
+              <div class="sx-actions">
+                <a href="#contacto" class="btn btn--accent" data-prefill-sector={s.content[lang].formValue}>
+                  {ui.cta}
+                  <Icon name="arrow" />
+                </a>
+                <a href={routes[lang].sector(s.slug[lang])} class="link-arrow">
+                  {ui.more}
+                  <Icon name="arrow" />
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { prefillContact } from '../scripts/journey.ts';
+  const root = document.querySelector<HTMLElement>('[data-sectors]');
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const select = (i: number, focus = false) => {
+      tabs.forEach((tab, k) => {
+        const on = k === i;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        const p = document.getElementById(tab.getAttribute('aria-controls')!);
+        if (p) p.hidden = !on;
+      });
+      if (focus) tabs[i].focus();
+      if (window.matchMedia('(max-width: 900px)').matches) tabs[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (e) => {
+        const k = e.key;
+        if (k === 'ArrowDown' || k === 'ArrowRight') select((i + 1) % tabs.length, true);
+        else if (k === 'ArrowUp' || k === 'ArrowLeft') select((i - 1 + tabs.length) % tabs.length, true);
+        else return;
+        e.preventDefault();
+      });
+    });
+  }
+  document.querySelectorAll<HTMLElement>('[data-prefill-sector]').forEach((a) =>
+    a.addEventListener('click', () => prefillContact('sector', a.dataset.prefillSector || '')),
+  );
+</script>
+
+<style>
+  .sx {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .sx > * {
+    min-width: 0;
+  }
+  .sx-list {
+    display: grid;
+    gap: 4px;
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+  }
+  .sx-tab {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-size: 15.5px;
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.25s;
+  }
+  .sx-tab:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .sx-tab[aria-selected='true'] {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--line-2);
+  }
+  .sx-tab[aria-selected='true'] :global(svg) {
+    color: var(--accent-2);
+  }
+  .sx-panel {
+    padding: clamp(24px, 3.4vw, 44px);
+    animation: demo-pop 0.5s var(--ease) both;
+  }
+  .sx-panel[hidden] {
+    display: none;
+  }
+  .sx-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 28px;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  @media (max-width: 900px) {
+    .sx {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .sx-list {
+      position: static;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 0 var(--gutter) 6px;
+      scrollbar-width: none;
+      scroll-snap-type: x proximity;
+    }
+    .sx-tab {
+      flex: none;
+      padding: 10px 14px;
+      border-color: var(--line-2);
+      border-radius: 999px;
+      font-size: 14px;
+      scroll-snap-align: center;
+    }
+    .sx-actions .btn {
+      width: 100%;
+    }
+  }
+</style>

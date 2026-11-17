@@ -1,0 +1,220 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang).hero;
+const nodes = lang === 'es'
+  ? ['CRM', 'WhatsApp', 'Correo', 'Agenda', 'ERP', 'Formularios', 'Sheets', 'Web']
+  : ['CRM', 'WhatsApp', 'Email', 'Calendar', 'ERP', 'Forms', 'Sheets', 'Web'];
+const ticker = lang === 'es'
+  ? ['Agentes de IA', 'Automatización de procesos', 'WhatsApp Business', 'CRM inteligente', 'Integraciones', 'Informes automáticos', 'Atención 24/7', 'Consultoría de IA']
+  : ['AI agents', 'Process automation', 'WhatsApp Business', 'Smart CRM', 'Integrations', 'Automatic reports', '24/7 service', 'AI consulting'];
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <canvas class="hero-canvas" data-hero-canvas data-nodes={JSON.stringify(nodes)} role="img" aria-label={ui.canvasLabel}></canvas>
+  <div class="hero-vignette" aria-hidden="true"></div>
+
+  <div class="container hero-inner">
+    <p class="hero-brand reveal" aria-label="RESUELVE INTELLECT">
+      <span class="hb-a">RESUELVE</span><span class="hb-sep" aria-hidden="true"></span><span class="hb-b">INTELLECT</span>
+    </p>
+    <h1 id="hero-title" class="h1 hero-title">
+      <span class="reveal" style="--d:1">{ui.titleA}</span>
+      <span class="reveal gradient-text" style="--d:2">{ui.titleB}</span>
+    </h1>
+    <p class="lead hero-sub reveal" style="--d:3">{ui.subtitle}</p>
+    <div class="hero-ctas reveal" style="--d:4">
+      <a href="#servicios" class="btn btn--accent" data-cta="hero-discover">{ui.ctaPrimary}<Icon name="arrow" /></a>
+      <a href="#contacto" class="btn btn--ghost" data-cta="hero-diagnosis">{ui.ctaSecondary}</a>
+    </div>
+    <div class="hero-meta reveal" style="--d:5">
+      <span class="hero-slogan">“{ui.slogan}”</span>
+      <span class="hero-loc"><span class="dot" aria-hidden="true"></span>{ui.locations}</span>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      {[...ticker, ...ticker].map((x) => <span>{x}<i></i></span>)}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initHeroCanvas } from '../scripts/hero-canvas.ts';
+  const c = document.querySelector<HTMLCanvasElement>('[data-hero-canvas]');
+  if (c) initHeroCanvas(c);
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: calc(var(--nav-h) + 40px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+  }
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(6, 6, 7, 0.96) 0%, rgba(6, 6, 7, 0.9) 34%, rgba(6, 6, 7, 0.35) 56%, transparent 70%),
+      linear-gradient(180deg, transparent 60%, var(--bg) 100%);
+  }
+  .hero-inner {
+    position: relative;
+    padding-bottom: 96px;
+  }
+  .hero-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: clamp(24px, 3vw, 36px);
+    font-size: clamp(15px, 1.9vw, 24px);
+    letter-spacing: 0.34em;
+    line-height: 1;
+  }
+  .hb-a {
+    font-weight: 750;
+  }
+  .hb-b {
+    font-weight: 300;
+    color: var(--accent-2);
+  }
+  .hb-sep {
+    width: clamp(22px, 3vw, 44px);
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.6), var(--accent));
+    border-radius: 2px;
+  }
+  .hero-inner > * {
+    max-width: 760px;
+  }
+  .hero-title {
+    display: grid;
+    font-size: clamp(40px, 5.4vw, 84px);
+  }
+  .hero-sub {
+    margin-top: clamp(24px, 3vw, 36px);
+    max-width: 600px;
+  }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: clamp(32px, 4vw, 44px);
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 28px;
+    margin-top: clamp(36px, 5vw, 56px);
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .hero-slogan {
+    font-style: italic;
+    color: var(--text);
+  }
+  .hero-loc {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hero-loc .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 10px var(--ok);
+    animation: blink 2.4s infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  .ticker {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 1px solid var(--line);
+    background: rgba(6, 6, 7, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker 48s linear infinite;
+  }
+  .ticker span {
+    display: inline-flex;
+    align-items: center;
+    gap: 28px;
+    padding: 18px 0 18px 28px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .ticker i {
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+  @keyframes ticker {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      justify-content: flex-end;
+    }
+    .hero-vignette {
+      background:
+        linear-gradient(180deg, rgba(6, 6, 7, 0) 0%, rgba(6, 6, 7, 0.55) 34%, rgba(6, 6, 7, 0.94) 52%, var(--bg) 100%);
+    }
+    .hero-inner {
+      padding-top: 40svh;
+      padding-bottom: 104px;
+    }
+    .hero-title {
+      font-size: clamp(38px, 10.6vw, 64px);
+    }
+    .hero-ctas .btn {
+      width: 100%;
+    }
+  }
+</style>

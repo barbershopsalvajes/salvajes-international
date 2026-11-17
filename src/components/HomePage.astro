@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from './Hero.astro';
+import Problem from './Problem.astro';
+import Services from './Services.astro';
+import Demos from './Demos.astro';
+import Sectors from './Sectors.astro';
+import Process from './Process.astro';
+import Calculator from './Calculator.astro';
+import Why from './Why.astro';
+import Locations from './Locations.astro';
+import Contact from './Contact.astro';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+import { site } from '../config/site.ts';
+import { services } from '../data/services.ts';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang);
+const ld = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${site.url}/#website`,
+    url: `${site.url}${routes[lang].home}`,
+    name: site.name,
+    inLanguage: lang,
+    publisher: { '@id': `${site.url}/#organization` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: ui.services.eyebrow,
+    itemListElement: services.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${site.url}${routes[lang].service(s.slug[lang])}`,
+      name: s.content[lang].title,
+    })),
+  },
+];
+---
+
+<Base lang={lang} title={ui.meta.homeTitle} description={ui.meta.homeDescription} alternate={{ es: routes.es.home, en: routes.en.home }} jsonLd={ld}>
+  <Hero lang={lang} />
+  <Problem lang={lang} />
+  <Services lang={lang} />
+  <Demos lang={lang} />
+  <Sectors lang={lang} />
+  <Process lang={lang} />
+  <Calculator lang={lang} />
+  <Why lang={lang} />
+  <Locations lang={lang} />
+  <Contact lang={lang} />
+</Base>

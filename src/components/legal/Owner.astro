@@ -1,0 +1,22 @@
+---
+/** Datos del titular desde configuración. Si faltan, se muestra un aviso visible para completarlos. */
+import { site } from '../../config/site.ts';
+interface Props {
+  lang: 'es' | 'en';
+}
+const { lang } = Astro.props;
+const missing = (v: string) => (lang === 'es' ? `[Pendiente de configurar: ${v}]` : `[To be configured: ${v}]`);
+const L = site.legal;
+const rows = [
+  { k: lang === 'es' ? 'Titular' : 'Owner', v: L.name, env: 'PUBLIC_LEGAL_NAME' },
+  { k: lang === 'es' ? 'NIF / identificación fiscal' : 'Tax ID', v: L.id, env: 'PUBLIC_LEGAL_ID' },
+  { k: lang === 'es' ? 'Domicilio' : 'Registered address', v: L.address, env: 'PUBLIC_LEGAL_ADDRESS' },
+  { k: lang === 'es' ? 'Datos registrales' : 'Registry details', v: L.registry, env: 'PUBLIC_LEGAL_REGISTRY' },
+  { k: lang === 'es' ? 'Correo electrónico' : 'Email', v: site.contact.email, env: 'PUBLIC_CONTACT_EMAIL' },
+];
+---
+
+<ul>
+  {rows.map((r) => <li><strong>{r.k}:</strong> {r.v ? r.v : <span class="placeholder">{missing(r.env)}</span>}</li>)}
+  <li><strong>{lang === 'es' ? 'Nombre comercial' : 'Trade name'}:</strong> RESUELVE INTELLECT</li>
+</ul>

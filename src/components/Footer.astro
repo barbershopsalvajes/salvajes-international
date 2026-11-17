@@ -1,0 +1,203 @@
+---
+import Logo from './ui/Logo.astro';
+import Icon from './ui/Icon.astro';
+import { site } from '../config/site.ts';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+import { services } from '../data/services.ts';
+import { sectors } from '../data/sectors.ts';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang);
+const r = routes[lang];
+const year = new Date().getFullYear();
+const socials = [
+  { href: site.contact.whatsappUrl, icon: 'whatsapp', label: ui.contact.whatsapp },
+  { href: site.contact.email ? `mailto:${site.contact.email}` : '', icon: 'mail', label: ui.contact.email },
+  { href: site.contact.instagram, icon: 'instagram', label: ui.contact.instagram },
+  { href: site.contact.linkedin, icon: 'linkedin', label: ui.contact.linkedin },
+].filter((s) => s.href);
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="f-top">
+      <div class="f-brand">
+        <a href={r.home} aria-label={ui.a11y.home}><Logo /></a>
+        <p class="f-tag">{ui.footer.tagline}</p>
+        <p class="f-slogan">{ui.hero.slogan}</p>
+        {
+          socials.length > 0 && (
+            <ul class="f-social">
+              {socials.map((s) => (
+                <li>
+                  <a href={s.href} aria-label={s.label} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
+                    <Icon name={s.icon} size={20} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+      <div class="f-cols">
+        <div>
+          <h2 class="f-h">{ui.footer.services}</h2>
+          <ul>{services.map((s) => <li><a href={r.service(s.slug[lang])}>{s.content[lang].title}</a></li>)}</ul>
+        </div>
+        <div>
+          <h2 class="f-h">{ui.footer.sectors}</h2>
+          <ul>{sectors.map((s) => <li><a href={r.sector(s.slug[lang])}>{s.content[lang].name}</a></li>)}</ul>
+        </div>
+        <div>
+          <h2 class="f-h">{ui.footer.company}</h2>
+          <ul>
+            <li><a href={`${r.home}#demos`}>{ui.nav.demos}</a></li>
+            <li><a href={`${r.home}#metodo`}>{ui.nav.process}</a></li>
+            <li><a href={`${r.home}#calculadora`}>{ui.nav.calculator}</a></li>
+            <li><a href={`${r.home}#ubicaciones`}>{ui.locations.eyebrow}</a></li>
+            <li><a href={`${r.home}#contacto`}>{ui.nav.contact}</a></li>
+          </ul>
+          <h2 class="f-h f-h--gap">{ui.footer.legal}</h2>
+          <ul>
+            <li><a href={r.legal}>{ui.footer.legalNotice}</a></li>
+            <li><a href={r.privacy}>{ui.footer.privacy}</a></li>
+            <li><a href={r.cookies}>{ui.footer.cookies}</a></li>
+            <li><button type="button" class="f-linkbtn" data-cookie-open>{ui.footer.cookieSettings}</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="f-wordmark" aria-hidden="true">RESUELVE INTELLECT</div>
+    <div class="f-bottom">
+      <p>© {year} {site.name}. {ui.footer.rights}</p>
+      <p class="f-loc"><Icon name="pin" size={14} /> Barcelona · {lang === 'es' ? 'Dubái' : 'Dubai'}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    padding-top: clamp(72px, 9vw, 120px);
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .f-top {
+    display: grid;
+    grid-template-columns: 1.1fr 2fr;
+    gap: 64px;
+  }
+  .f-tag {
+    margin-top: 24px;
+    max-width: 360px;
+    color: var(--muted);
+  }
+  .f-slogan {
+    margin-top: 16px;
+    color: var(--accent-2);
+    font-weight: 500;
+  }
+  .f-social {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .f-social a {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--line-2);
+    color: var(--muted);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .f-social a:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .f-cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .f-h {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin-bottom: 18px;
+  }
+  .f-h--gap {
+    margin-top: 32px;
+  }
+  .f-cols li + li {
+    margin-top: 10px;
+  }
+  .f-cols a,
+  .f-linkbtn {
+    font-size: 14.5px;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .f-linkbtn {
+    background: none;
+    border: 0;
+    padding: 0;
+    text-align: left;
+  }
+  .f-cols a:hover,
+  .f-linkbtn:hover {
+    color: var(--text);
+  }
+  .f-wordmark {
+    margin-top: clamp(56px, 8vw, 100px);
+    font-size: min(8.4vw, 122px);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    white-space: nowrap;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    user-select: none;
+    text-align: center;
+  }
+  .f-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 28px 0 calc(28px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    color: var(--muted-2);
+  }
+  .f-loc {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  @media (max-width: 960px) {
+    .f-top {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+  }
+  @media (max-width: 640px) {
+    .f-cols {
+      grid-template-columns: 1fr 1fr;
+    }
+    .f-cols > div:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

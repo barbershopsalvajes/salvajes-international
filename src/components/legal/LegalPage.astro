@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { routes, type Lang } from '../../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  page: 'privacy' | 'cookies' | 'legal';
+  updated: string;
+}
+const { lang, title, description, page, updated } = Astro.props;
+---
+
+<Base lang={lang} title={`${title} · RESUELVE INTELLECT`} description={description} alternate={{ es: routes.es[page], en: routes.en[page] }}>
+  <section class="page-hero">
+    <div class="container">
+      <h1 class="h2">{title}</h1>
+      <p class="muted" style="margin-top:16px">{lang === 'es' ? 'Última actualización' : 'Last updated'}: {updated}</p>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="prose"><slot /></div>
+    </div>
+  </section>
+</Base>

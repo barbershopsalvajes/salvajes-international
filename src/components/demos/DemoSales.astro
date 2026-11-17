@@ -1,0 +1,305 @@
+---
+import Icon from '../ui/Icon.astro';
+import { t, type Lang } from '../../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const all = t(lang);
+const d = all.demos;
+const ui = d.sales;
+const icons = ['inbox', 'brain', 'database', 'mail', 'bell'];
+const strings = {
+  lang,
+  steps: ui.steps,
+  priority: ui.priority,
+  score: ui.score,
+  emailSubject: ui.emailSubject,
+  notification: ui.notification,
+  urgencyOpts: ui.urgencyOpts,
+  reset: ui.reset,
+  labels: lang === 'es'
+    ? { stage: 'Etapa', owner: 'Responsable', source: 'Origen', created: 'Creado', stageNew: 'Nuevo lead', ownerAuto: 'Asignado automáticamente', web: 'Formulario web', reasons: 'Motivos', wa: 'WhatsApp de bienvenida programado', reasonsMap: { size: 'Tamaño de empresa', service_defined: 'Servicio identificado', detailed_need: 'Necesidad detallada', urgency: 'Urgencia detectada', phone_provided: 'Teléfono disponible', enterprise: 'Gran empresa' } }
+    : { stage: 'Stage', owner: 'Owner', source: 'Source', created: 'Created', stageNew: 'New lead', ownerAuto: 'Auto-assigned', web: 'Web form', reasons: 'Reasons', wa: 'Welcome WhatsApp scheduled', reasonsMap: { size: 'Company size', service_defined: 'Service identified', detailed_need: 'Detailed need', urgency: 'Urgency detected', phone_provided: 'Phone available', enterprise: 'Enterprise' } },
+};
+---
+
+<div class="demo sales" data-sales data-lang={lang} data-strings={JSON.stringify(strings)}>
+  <div class="demo-head">
+    <div>
+      <h3>{ui.title}</h3>
+      <p>{ui.intro}</p>
+    </div>
+    <span class="chip chip--sim"><span class="dot"></span>{d.simBadge}</span>
+  </div>
+
+  <div class="sales-grid">
+    <form class="panel sales-form" data-sales-form novalidate>
+      <p class="panel-title">{ui.steps[0]}</p>
+      <div class="field">
+        <label for="sd-name">{ui.name}</label>
+        <input class="input" id="sd-name" name="name" value={ui.defaults.name} maxlength="60" required />
+      </div>
+      <div class="field">
+        <label for="sd-company">{ui.company}</label>
+        <input class="input" id="sd-company" name="company" value={ui.defaults.company} maxlength="60" required />
+      </div>
+      <div class="two">
+        <div class="field">
+          <label for="sd-sector">{ui.sector}</label>
+          <select class="select" id="sd-sector" name="sector">
+            {all.options.sectors.map((o, i) => <option selected={i === 0}>{o}</option>)}
+          </select>
+        </div>
+        <div class="field">
+          <label for="sd-emp">{ui.employees}</label>
+          <select class="select" id="sd-emp" name="employees">
+            {all.contact.employeesOpts.map((o, i) => <option selected={i === 1}>{o}</option>)}
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="sd-need">{ui.need}</label>
+        <textarea class="textarea" id="sd-need" name="need" rows="3" maxlength="240">{ui.defaults.need}</textarea>
+      </div>
+      <div class="field">
+        <span class="label" id="sd-urg-label">{ui.urgency}</span>
+        <div class="seg" role="radiogroup" aria-labelledby="sd-urg-label">
+          {ui.urgencyOpts.map((o, i) => (
+            <label><input type="radio" name="urgency" value={i} checked={i === 0} /><span>{o}</span></label>
+          ))}
+        </div>
+      </div>
+      <button class="btn btn--accent btn--block" type="submit" data-sales-run>{ui.run}<Icon name="arrow" /></button>
+    </form>
+
+    <ol class="flow" data-sales-flow>
+      {
+        ui.steps.map((st, i) => (
+          <li class="flow-step" data-step={i}>
+            <span class="flow-node"><Icon name={icons[i]} size={20} /></span>
+            <div class="flow-body">
+              <p class="flow-title"><span class="flow-n">0{i + 1}</span>{st}</p>
+              <div class="flow-out" data-out={i}></div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+  <p class="demo-note"><Icon name="shield" size={16} />{d.simNote}</p>
+</div>
+
+<script>
+  import { initSales } from '../../scripts/demo-sales.ts';
+  document.querySelectorAll<HTMLElement>('[data-sales]').forEach(initSales);
+</script>
+
+<style>
+  .sales-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .sales-form {
+    display: grid;
+    gap: 16px;
+  }
+  .two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .sales-form .textarea {
+    min-height: 92px;
+  }
+  .seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .seg label {
+    position: relative;
+  }
+  .seg input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .seg span {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--line-2);
+    font-size: 13px;
+    text-align: center;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .seg input:checked + span {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--text);
+  }
+  .seg input:focus-visible + span {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .flow {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+  }
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: var(--line-2);
+  }
+  .flow::after {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 24px;
+    width: 2px;
+    height: var(--progress, 0%);
+    max-height: calc(100% - 48px);
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    box-shadow: 0 0 12px var(--accent);
+    transition: height 0.7s var(--ease);
+  }
+  .flow-step {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    padding: 10px 0;
+  }
+  .flow-node {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid var(--line-2);
+    background: #0d0e11;
+    color: var(--muted-2);
+    transition: all 0.45s var(--ease);
+  }
+  .flow-step.is-active .flow-node {
+    border-color: var(--accent);
+    color: var(--accent-2);
+    box-shadow: 0 0 0 6px rgba(255, 90, 31, 0.12), 0 0 30px rgba(255, 90, 31, 0.35);
+  }
+  .flow-step.is-done .flow-node {
+    border-color: rgba(255, 90, 31, 0.5);
+    background: var(--accent);
+    color: #111;
+  }
+  .flow-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    font-weight: 600;
+    color: var(--muted);
+    transition: color 0.3s;
+  }
+  .flow-step.is-active .flow-title,
+  .flow-step.is-done .flow-title {
+    color: var(--text);
+  }
+  .flow-n {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted-2);
+  }
+  .flow-out:empty {
+    display: none;
+  }
+  .flow-out {
+    margin-top: 4px;
+  }
+  .flow-out :global(.out-card) {
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 14px;
+    animation: demo-pop 0.5s var(--ease) both;
+  }
+  .flow-out :global(.score-row) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .flow-out :global(.score-num) {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .flow-out :global(.reasons) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .flow-out :global(.reasons span) {
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .flow-out :global(.mail-sub) {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .flow-out :global(.mail-body) {
+    white-space: pre-line;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  .flow-out :global(.wa-line) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--ok);
+    font-size: 13px;
+  }
+  .flow-out :global(.notif) {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border-color: rgba(255, 90, 31, 0.35);
+    background: linear-gradient(135deg, rgba(255, 90, 31, 0.12), rgba(255, 90, 31, 0.02));
+  }
+  .sales [data-sales-run].is-reset {
+    background: var(--text);
+    box-shadow: none;
+  }
+  @media (max-width: 900px) {
+    .sales-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 420px) {
+    .two {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

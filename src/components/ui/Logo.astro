@@ -1,0 +1,64 @@
+---
+/**
+ * Marca RESUELVE INTELLECT.
+ * Símbolo: tres trayectorias (problemas) que convergen en un nodo y salen
+ * como una única línea (la solución).
+ */
+interface Props {
+  compact?: boolean;
+  class?: string;
+}
+const { compact = false, class: cls } = Astro.props;
+---
+
+<span class:list={['logo', cls]}>
+  <svg class="logo-mark" viewBox="0 0 36 36" width="34" height="34" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="lg-ri" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ff8a3d" />
+        <stop offset="1" stop-color="#ff4d12" />
+      </linearGradient>
+    </defs>
+    <rect x="0.5" y="0.5" width="35" height="35" rx="10" fill="#111215" stroke="rgba(255,255,255,0.12)" />
+    <path d="M7 10.5c5 0 6.5 7.5 11 7.5M7 18h11M7 25.5c5 0 6.5-7.5 11-7.5" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.7" stroke-linecap="round" />
+    <path d="M18 18h10" stroke="url(#lg-ri)" stroke-width="2.4" stroke-linecap="round" />
+    <circle cx="18" cy="18" r="3.4" fill="url(#lg-ri)" />
+    <circle cx="28.5" cy="18" r="1.8" fill="#fff" />
+  </svg>
+  {
+    !compact && (
+      <span class="logo-word">
+        <span class="logo-a">RESUELVE</span>
+        <span class="logo-b">INTELLECT</span>
+      </span>
+    )
+  }
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text);
+  }
+  .logo-mark {
+    flex: none;
+  }
+  .logo-word {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    font-size: 15px;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+  }
+  .logo-a {
+    font-weight: 750;
+  }
+  .logo-b {
+    font-weight: 400;
+    color: var(--muted);
+  }
+</style>

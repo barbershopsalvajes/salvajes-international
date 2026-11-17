@@ -1,0 +1,270 @@
+---
+import Icon from '../ui/Icon.astro';
+import { t, type Lang } from '../../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang).demos;
+const ui = d.receptionist;
+const panel = lang === 'es'
+  ? { title: 'Lo que ocurre por detrás', state: 'Estado', intent: 'Paso actual', integrations: 'Integraciones de la versión real', items: ['Agenda de la clínica', 'WhatsApp Business', 'CRM de pacientes', 'Recordatorio 24 h'], steps: { idle: 'Escuchando', pain: 'Urgencia detectada', treatment: 'Identificando tratamiento', slot: 'Consultando agenda', name: 'Recogiendo datos', confirm: 'Esperando confirmación', done: 'Cita registrada', live: 'Modelo de IA respondiendo' } }
+  : { title: 'What happens behind the scenes', state: 'Status', intent: 'Current step', integrations: 'Real-version integrations', items: ['Clinic calendar', 'WhatsApp Business', 'Patient CRM', '24 h reminder'], steps: { idle: 'Listening', pain: 'Emergency detected', treatment: 'Identifying treatment', slot: 'Checking calendar', name: 'Collecting details', confirm: 'Awaiting confirmation', done: 'Appointment booked', live: 'AI model responding' } };
+const strings = { ...ui, simBadge: d.simBadge, liveBadge: d.liveBadge, steps: panel.steps, lang };
+---
+
+<div class="demo rx" data-rx data-strings={JSON.stringify(strings)}>
+  <div class="demo-head">
+    <div>
+      <h3>{ui.title}</h3>
+      <p data-rx-note>{ui.simNote}</p>
+    </div>
+    <span class="chip chip--sim" data-rx-badge><span class="dot"></span><span data-rx-badge-text>{d.simBadge}</span></span>
+  </div>
+
+  <div class="rx-grid">
+    <div class="phone">
+      <div class="phone-top">
+        <span class="avatar" aria-hidden="true"><Icon name="tooth" size={20} /></span>
+        <div>
+          <p class="phone-name">{ui.subtitle}</p>
+          <p class="phone-status"><span class="online"></span>online</p>
+        </div>
+        <button type="button" class="rx-reset" data-rx-reset aria-label={ui.reset} title={ui.reset}><Icon name="refresh" size={18} /></button>
+      </div>
+      <div class="rx-log" data-rx-log role="log" aria-live="polite" aria-relevant="additions" tabindex="0"></div>
+      <div class="rx-quick" data-rx-quick></div>
+      <form class="rx-form" data-rx-form autocomplete="off">
+        <label class="sr-only" for="rx-input">{ui.placeholder}</label>
+        <input id="rx-input" class="rx-input" name="msg" maxlength="500" placeholder={ui.placeholder} data-rx-input />
+        <button class="rx-send" type="submit" aria-label={ui.send}><Icon name="send" size={18} /></button>
+      </form>
+    </div>
+
+    <aside class="panel rx-panel" aria-label={panel.title}>
+      <p class="panel-title">{panel.title}</p>
+      <dl class="kv">
+        <dt>{panel.state}</dt>
+        <dd data-rx-step>{panel.steps.idle}</dd>
+      </dl>
+      <div class="rx-pipeline">
+        <p class="panel-title">{panel.integrations}</p>
+        <ul>
+          {panel.items.map((it, i) => <li data-rx-int={i}><Icon name="check" size={16} />{it}</li>)}
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  import { initReceptionist } from '../../scripts/demo-receptionist.ts';
+  document.querySelectorAll<HTMLElement>('[data-rx]').forEach(initReceptionist);
+</script>
+
+<style>
+  .rx-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: 24px;
+  }
+  .phone {
+    display: flex;
+    flex-direction: column;
+    height: 560px;
+    border-radius: 26px;
+    border: 1px solid var(--line-2);
+    background: #0b0c0f;
+    overflow: hidden;
+  }
+  .phone-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.025);
+  }
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #ff8a3d, #ff4d12);
+    color: #111;
+  }
+  .phone-name {
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+  .phone-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted-2);
+  }
+  .online {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+  .rx-reset {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--line-2);
+    background: transparent;
+    color: var(--muted);
+  }
+  .rx-reset:hover {
+    color: var(--text);
+  }
+  .rx-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  .rx-log:focus-visible {
+    outline-offset: -3px;
+  }
+  .rx-log :global(.msg) {
+    max-width: 82%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    white-space: pre-line;
+    animation: demo-pop 0.4s var(--ease) both;
+  }
+  .rx-log :global(.msg--bot) {
+    align-self: flex-start;
+    background: #1b1d22;
+    border-bottom-left-radius: 6px;
+  }
+  .rx-log :global(.msg--me) {
+    align-self: flex-end;
+    background: var(--accent);
+    color: #111;
+    border-bottom-right-radius: 6px;
+  }
+  .rx-log :global(.msg--typing) {
+    display: inline-flex;
+    gap: 4px;
+  }
+  .rx-log :global(.msg--typing i) {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: typing 1s infinite;
+  }
+  .rx-log :global(.msg--typing i:nth-child(2)) {
+    animation-delay: 0.15s;
+  }
+  .rx-log :global(.msg--typing i:nth-child(3)) {
+    animation-delay: 0.3s;
+  }
+  @keyframes typing {
+    50% {
+      opacity: 0.2;
+      transform: translateY(-2px);
+    }
+  }
+  .rx-quick {
+    display: flex;
+    gap: 8px;
+    padding: 0 12px 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rx-quick :global(button) {
+    flex: none;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 90, 31, 0.4);
+    background: var(--accent-soft);
+    color: var(--accent-2);
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .rx-quick :global(button:hover) {
+    background: rgba(255, 90, 31, 0.24);
+  }
+  .rx-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .rx-input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 16px;
+  }
+  .rx-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .rx-send {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--accent);
+    color: #111;
+  }
+  .rx-panel {
+    display: grid;
+    align-content: start;
+    gap: 24px;
+  }
+  .rx-pipeline li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--muted-2);
+    transition: color 0.4s;
+  }
+  .rx-pipeline li :global(svg) {
+    opacity: 0.25;
+    transition: opacity 0.4s, color 0.4s;
+  }
+  .rx-pipeline li.is-done {
+    color: var(--text);
+  }
+  .rx-pipeline li.is-done :global(svg) {
+    opacity: 1;
+    color: var(--ok);
+  }
+  @media (max-width: 860px) {
+    .rx-grid {
+      grid-template-columns: 1fr;
+    }
+    .phone {
+      height: min(560px, 72svh);
+    }
+  }
+</style>

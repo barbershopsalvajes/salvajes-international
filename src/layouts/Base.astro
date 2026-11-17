@@ -1,0 +1,114 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CookieBanner from '../components/CookieBanner.astro';
+import { site } from '../config/site.ts';
+import { t, type Lang } from '../i18n/ui.ts';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Ruta equivalente en el otro idioma (para hreflang y el selector ES/EN) */
+  alternate: { es: string; en: string };
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+  ogImage?: string;
+}
+
+const { lang, title, description, alternate, jsonLd = [], noindex = false, ogImage = '/og-image.png' } = Astro.props;
+const ui = t(lang);
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const altEs = new URL(alternate.es, site.url).href;
+const altEn = new URL(alternate.en, site.url).href;
+const og = new URL(ogImage, site.url).href;
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  '@id': `${site.url}/#organization`,
+  name: site.name,
+  alternateName: site.shortName,
+  url: `${site.url}/`,
+  logo: `${site.url}/icon-512.png`,
+  image: og,
+  slogan: ui.hero.slogan,
+  description: ui.meta.homeDescription,
+  knowsLanguage: ['es', 'en'],
+  areaServed: ['ES', 'AE', 'Latin America', 'Worldwide'],
+  address: [
+    { '@type': 'PostalAddress', addressLocality: 'Barcelona', addressCountry: 'ES' },
+    { '@type': 'PostalAddress', addressLocality: 'Dubai', addressCountry: 'AE' },
+  ],
+  knowsAbout: [
+    'Artificial intelligence',
+    'AI agents',
+    'Business process automation',
+    'WhatsApp automation',
+    'CRM automation',
+    'AI consulting',
+  ],
+  ...(site.contact.email ? { email: site.contact.email } : {}),
+  ...([site.contact.instagram, site.contact.linkedin].filter(Boolean).length
+    ? { sameAs: [site.contact.instagram, site.contact.linkedin].filter(Boolean) }
+    : {}),
+};
+const ld = [orgLd, ...jsonLd];
+---
+
+<!doctype html>
+<html lang={lang} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="alternate" hreflang="es" href={altEs} />
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="x-default" href={altEs} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={ui.meta.locale} />
+    <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_ES'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={og} />
+
+    <meta name="theme-color" content="#060607" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline>
+      document.documentElement.classList.remove('no-js');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
+    </script>
+    {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+  </head>
+  <body data-lang={lang}>
+    <a class="skip-link" href="#main">{ui.a11y.skip}</a>
+    <Header lang={lang} alternate={alternate} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <CookieBanner lang={lang} />
+    <script>
+      import '../scripts/global.ts';
+    </script>
+  </body>
+</html>

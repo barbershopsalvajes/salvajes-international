@@ -1,0 +1,162 @@
+---
+import { t, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const ui = t(Astro.props.lang).process;
+---
+
+<section class="section section--paper process" id="metodo" aria-labelledby="process-title">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="process-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+    </div>
+    <div class="pr" data-process>
+      <div class="pr-track" aria-hidden="true"><span class="pr-fill" data-process-fill></span></div>
+      <ol class="pr-steps">
+        {
+          ui.steps.map((s, i) => (
+            <li class="pr-step reveal" style={`--d:${i}`} data-process-step>
+              <span class="pr-dot" aria-hidden="true">
+                <span>{i + 1}</span>
+              </span>
+              <p class="pr-n">0{i + 1}</p>
+              <h3 class="pr-t">{s.t}</h3>
+              <p class="pr-d">{s.d}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  // La línea de progreso se completa a medida que la sección entra en pantalla
+  const root = document.querySelector<HTMLElement>('[data-process]');
+  const fill = root?.querySelector<HTMLElement>('[data-process-fill]');
+  const steps = root ? [...root.querySelectorAll<HTMLElement>('[data-process-step]')] : [];
+  if (root && fill) {
+    let ticking = false;
+    const vertical = () => window.matchMedia('(max-width: 900px)').matches;
+    const update = () => {
+      ticking = false;
+      const r = root.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const p = Math.max(0, Math.min(1, (vh * 0.75 - r.top) / (r.height + vh * 0.1)));
+      fill.style.setProperty('--p', String(p));
+      steps.forEach((s, i) => s.classList.toggle('is-active', p >= (vertical() ? i / steps.length : i / (steps.length - 1)) - 0.02));
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener('resize', update);
+    update();
+  }
+</script>
+
+<style>
+  .pr {
+    position: relative;
+  }
+  .pr-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 27px;
+    height: 2px;
+    background: rgba(11, 11, 13, 0.1);
+    border-radius: 2px;
+  }
+  .pr-fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(var(--p, 0));
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: inherit;
+    transition: transform 0.15s linear;
+  }
+  .pr-steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pr-dot {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid rgba(11, 11, 13, 0.14);
+    font-weight: 700;
+    color: var(--ink-muted);
+    transition: all 0.5s var(--ease);
+  }
+  .pr-step.is-active .pr-dot {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #111;
+    box-shadow: 0 0 0 8px rgba(255, 90, 31, 0.14);
+  }
+  .pr-n {
+    margin-top: 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .pr-t {
+    margin-top: 8px;
+    font-size: clamp(24px, 2.4vw, 32px);
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+  }
+  .pr-d {
+    margin-top: 12px;
+    color: var(--ink-muted);
+    font-size: 16px;
+  }
+  @media (max-width: 900px) {
+    .pr-track {
+      left: 27px;
+      right: auto;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      height: auto;
+    }
+    .pr-fill {
+      transform-origin: top;
+      transform: scaleY(var(--p, 0));
+    }
+    .pr-steps {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .pr-step {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      column-gap: 22px;
+    }
+    .pr-dot {
+      grid-row: span 3;
+    }
+    .pr-n {
+      margin-top: 0;
+    }
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, routes, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+  href?: string;
+  label?: string;
+}
+const { lang } = Astro.props;
+const ui = t(lang);
+const href = Astro.props.href ?? `${routes[lang].home}#contacto`;
+const label = Astro.props.label ?? ui.contact.submit;
+---
+
+<section class="cta-band">
+  <div class="container">
+    <div class="cta-inner card reveal">
+      <div>
+        <p class="eyebrow">{ui.hero.slogan}</p>
+        <h2 class="h2 cta-title">{ui.contact.title}</h2>
+      </div>
+      <a class="btn btn--accent" href={href} data-cta="band">{label}<Icon name="arrow" /></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    padding-block: clamp(64px, 9vw, 120px);
+  }
+  .cta-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    padding: clamp(32px, 5vw, 64px);
+    background: radial-gradient(ellipse at 100% 0%, rgba(255, 90, 31, 0.22), transparent 55%), linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+  }
+  .cta-title {
+    margin-top: 18px;
+    max-width: 18ch;
+    font-size: clamp(30px, 4vw, 52px);
+  }
+</style>

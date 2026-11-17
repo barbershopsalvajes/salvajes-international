@@ -1,0 +1,229 @@
+---
+import Icon from './ui/Icon.astro';
+import { t, type Lang } from '../i18n/ui.ts';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = t(lang).locations;
+
+// Mapa de puntos estilizado generado en build (proyección equirectangular).
+type P = [number, number];
+const land: P[][] = [
+  [[-168,66],[-140,70],[-95,72],[-80,73],[-62,60],[-55,50],[-66,44],[-76,35],[-81,25],[-97,26],[-97,19],[-87,21],[-83,10],[-78,8],[-92,15],[-105,20],[-112,30],[-118,34],[-124,40],[-124,48],[-135,58],[-150,60],[-165,60]],
+  [[-50,60],[-42,60],[-20,70],[-20,80],[-60,82],[-72,77],[-55,68]],
+  [[-78,8],[-60,10],[-50,0],[-35,-6],[-38,-15],[-48,-25],[-58,-35],[-65,-42],[-68,-55],[-74,-50],[-72,-30],[-71,-18],[-81,-5],[-80,2]],
+  [[-10,36],[-9,43],[-2,44],[-4,48],[2,51],[8,54],[10,58],[5,62],[15,69],[28,71],[40,68],[45,60],[40,48],[30,45],[28,41],[22,37],[15,38],[12,44],[3,42],[-2,36]],
+  [[-6,50],[2,51],[0,54],[-3,59],[-6,56]],
+  [[-17,21],[-10,30],[-5,36],[10,37],[20,32],[32,31],[35,27],[43,12],[51,12],[40,-3],[40,-15],[35,-25],[20,-35],[17,-29],[12,-17],[13,-5],[9,4],[-8,4],[-17,14]],
+  [[35,28],[39,22],[43,13],[52,15],[59,22],[56,26],[50,30],[47,30],[38,33]],
+  [[28,41],[40,42],[45,40],[48,30],[57,25],[62,25],[67,24],[72,20],[77,8],[80,15],[88,22],[92,22],[98,16],[100,7],[104,1],[106,10],[109,12],[108,20],[117,24],[122,30],[121,40],[127,38],[130,43],[140,47],[143,52],[156,58],[163,62],[178,65],[180,70],[140,73],[110,77],[80,73],[60,70],[45,68],[40,60],[45,50],[40,45]],
+  [[130,31],[135,34],[140,36],[142,40],[141,45],[139,42],[134,34]],
+  [[95,5],[105,-6],[115,-8],[120,-9],[125,-8],[140,-5],[150,-10],[140,-2],[130,0],[120,2],[110,2],[100,2]],
+  [[114,-22],[122,-18],[130,-12],[137,-12],[142,-11],[146,-19],[153,-26],[150,-37],[140,-38],[131,-32],[116,-35],[114,-28]],
+  [[44,-25],[47,-25],[50,-15],[49,-12],[44,-17]],
+  [[166,-46],[174,-41],[178,-38],[173,-35],[170,-45]],
+];
+const inside = (pt: P, poly: P[]) => {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    if (yi > pt[1] !== yj > pt[1] && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+};
+const W = 1000;
+const LAT_TOP = 78;
+const LAT_BOT = -56;
+const H = Math.round((W * (LAT_TOP - LAT_BOT)) / 360);
+const proj = (lon: number, lat: number): P => [((lon + 180) / 360) * W, ((LAT_TOP - lat) / (LAT_TOP - LAT_BOT)) * H];
+const dots: P[] = [];
+for (let lat = LAT_TOP; lat >= LAT_BOT; lat -= 2.6) {
+  for (let lon = -170; lon <= 180; lon += 2.6) {
+    if (land.some((poly) => inside([lon, lat], poly))) dots.push(proj(lon, lat));
+  }
+}
+const bcn = proj(2.17, 41.39);
+const dxb = proj(55.27, 25.2);
+const latam = [proj(-99.13, 19.43), proj(-74.07, 4.71), proj(-58.38, -34.6), proj(-70.65, -33.45)];
+const arc = (a: P, b: P, lift = 0.28) => {
+  const mx = (a[0] + b[0]) / 2;
+  const my = (a[1] + b[1]) / 2 - Math.hypot(b[0] - a[0], b[1] - a[1]) * lift;
+  return `M${a[0].toFixed(1)},${a[1].toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${b[0].toFixed(1)},${b[1].toFixed(1)}`;
+};
+const r1 = (n: number) => n.toFixed(1);
+---
+
+<section class="section locations" id="ubicaciones" aria-labelledby="loc-title">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow reveal">{ui.eyebrow}</span>
+      <h2 id="loc-title" class="h2 reveal" style="--d:1">{ui.title}</h2>
+      <p class="lead reveal" style="--d:2">{ui.intro}</p>
+    </div>
+
+    <div class="map-wrap reveal">
+      <svg class="map" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={ui.mapLabel}>
+        <defs>
+          <radialGradient id="pin-glow">
+            <stop offset="0" stop-color="#ff6a2b" stop-opacity="0.55" />
+            <stop offset="1" stop-color="#ff6a2b" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="arc-g" x1="0" x2="1">
+            <stop offset="0" stop-color="#ff8a3d" />
+            <stop offset="1" stop-color="#ff4d12" />
+          </linearGradient>
+        </defs>
+        <g fill="rgba(255,255,255,0.16)">
+          {dots.map(([x, y]) => <circle cx={r1(x)} cy={r1(y)} r="1.7" />)}
+        </g>
+        {latam.map((p) => <path class="arc arc--soft" d={arc(bcn, p, 0.22)} />)}
+        <path class="arc arc--main" d={arc(bcn, dxb, 0.35)} />
+        {latam.map((p) => <circle cx={r1(p[0])} cy={r1(p[1])} r="3" class="node-soft" />)}
+        {
+          [
+            { p: bcn, label: 'BARCELONA', dx: -14, anchor: 'end' },
+            { p: dxb, label: lang === 'es' ? 'DUBÁI' : 'DUBAI', dx: 14, anchor: 'start' },
+          ].map(({ p, label, dx, anchor }) => (
+            <g class="pin">
+              <circle cx={r1(p[0])} cy={r1(p[1])} r="34" fill="url(#pin-glow)" />
+              <circle cx={r1(p[0])} cy={r1(p[1])} r="10" class="pin-ring" />
+              <circle cx={r1(p[0])} cy={r1(p[1])} r="5" fill="#ff6a2b" stroke="#060607" stroke-width="2" />
+              <text x={r1(p[0] + dx)} y={r1(p[1] - 12)} text-anchor={anchor} class="pin-label">{label}</text>
+            </g>
+          ))
+        }
+      </svg>
+    </div>
+
+    <div class="loc-cards">
+      {
+        [ui.bcn, ui.dxb].map((c, i) => (
+          <article class="card card--spot loc reveal" style={`--d:${i}`}>
+            <span class="icon-tile"><Icon name="pin" /></span>
+            <div>
+              <h3 class="loc-city">{c.city}</h3>
+              <p class="loc-country">{c.country}</p>
+              <p class="loc-d">{c.d}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    <ul class="markets reveal">
+      {ui.markets.map((m) => <li class="chip"><Icon name="globe" size={14} />{m}</li>)}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .map-wrap {
+    position: relative;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    background: radial-gradient(ellipse at 55% 40%, rgba(255, 90, 31, 0.07), transparent 60%), var(--bg-2);
+    padding: clamp(12px, 3vw, 40px);
+    overflow: hidden;
+  }
+  .map {
+    width: 100%;
+    height: auto;
+  }
+  .arc {
+    fill: none;
+    stroke-linecap: round;
+  }
+  .arc--main {
+    stroke: url(#arc-g);
+    stroke-width: 2.4;
+    stroke-dasharray: 6 8;
+    animation: dash 1.6s linear infinite;
+  }
+  .arc--soft {
+    stroke: rgba(255, 255, 255, 0.22);
+    stroke-width: 1.2;
+    stroke-dasharray: 3 7;
+    animation: dash 3s linear infinite;
+  }
+  .node-soft {
+    fill: #4c8dff;
+    stroke: #060607;
+    stroke-width: 2;
+  }
+  .pin-ring {
+    fill: none;
+    stroke: #ff6a2b;
+    stroke-width: 1.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ring 2.4s var(--ease) infinite;
+  }
+  .pin-label {
+    fill: #f4f4f2;
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -28;
+    }
+  }
+  @keyframes ring {
+    from {
+      transform: scale(0.6);
+      opacity: 1;
+    }
+    to {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+  .loc-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+  }
+  .loc {
+    display: flex;
+    gap: 20px;
+    padding: 28px;
+  }
+  .loc-city {
+    font-size: clamp(26px, 3vw, 36px);
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+  }
+  .loc-country {
+    margin-top: 4px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+  .loc-d {
+    margin-top: 12px;
+    color: var(--muted);
+  }
+  .markets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  @media (max-width: 720px) {
+    .loc-cards {
+      grid-template-columns: 1fr;
+    }
+    .pin-label {
+      font-size: 22px;
+    }
+    .map-wrap {
+      margin-inline: calc(var(--gutter) * -0.5);
+    }
+  }
+</style>
