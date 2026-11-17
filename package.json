@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Web oficial de RESUELVE INTELLECT — agencia de inteligencia artificial, agentes y automatización (Barcelona · Dubái).",
+  "description": "Web oficial de RESUELVE INTELLECT — agencia de inteligencia artificial, agentes y automatización (Barcelona, España).",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

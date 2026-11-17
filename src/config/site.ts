@@ -13,7 +13,7 @@ export const site = {
   name: 'RESUELVE INTELLECT',
   shortName: 'Resuelve Intellect',
   url: (clean(env.PUBLIC_SITE_URL) || 'https://resuelveintellect.com').replace(/\/$/, ''),
-  locations: ['Barcelona', 'Dubai'] as const,
+  locations: ['Barcelona'] as const,
   contact: {
     email: clean(env.PUBLIC_CONTACT_EMAIL),
     whatsappNumber,

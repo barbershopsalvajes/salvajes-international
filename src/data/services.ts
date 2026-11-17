@@ -31,7 +31,7 @@ export const services: Service[] = [
         short: 'Asistentes inteligentes que responden consultas, gestionan solicitudes, recopilan información y ejecutan tareas.',
         seoTitle: 'Agentes de IA para empresas · RESUELVE INTELLECT',
         seoDescription:
-          'Diseñamos agentes de inteligencia artificial para empresas que responden consultas, gestionan solicitudes y ejecutan tareas conectados a tus herramientas. Barcelona y Dubái.',
+          'Diseñamos agentes de inteligencia artificial para empresas que responden consultas, gestionan solicitudes y ejecutan tareas conectados a tus herramientas. Barcelona, España.',
         problem:
           'Tu equipo dedica cada día horas a responder las mismas preguntas, buscar información en distintos sistemas y ejecutar tareas sencillas que interrumpen el trabajo importante.',
         problemPoints: [
@@ -63,7 +63,7 @@ export const services: Service[] = [
         short: 'Intelligent assistants that answer queries, handle requests, collect information and carry out tasks.',
         seoTitle: 'AI agents for business · RESUELVE INTELLECT',
         seoDescription:
-          'We design AI agents for businesses that answer queries, handle requests and carry out tasks connected to your tools. Barcelona and Dubai.',
+          'We design AI agents for businesses that answer queries, handle requests and carry out tasks connected to your tools. Barcelona, Spain.',
         problem:
           'Every day your team spends hours answering the same questions, searching for information across systems and doing simple tasks that interrupt important work.',
         problemPoints: [
@@ -102,7 +102,7 @@ export const services: Service[] = [
         short: 'Conectamos aplicaciones y automatizamos operaciones administrativas y empresariales.',
         seoTitle: 'Automatización de procesos empresariales · RESUELVE INTELLECT',
         seoDescription:
-          'Automatización empresarial: conectamos tus aplicaciones y automatizamos facturas, altas, informes y tareas administrativas. Agencia de automatización en Barcelona y Dubái.',
+          'Automatización empresarial: conectamos tus aplicaciones y automatizamos facturas, altas, informes y tareas administrativas. Agencia de automatización en Barcelona, España.',
         problem:
           'Copiar datos de un sistema a otro, preparar informes a mano o perseguir aprobaciones por correo son tareas que se repiten a diario y generan errores.',
         problemPoints: [
@@ -134,7 +134,7 @@ export const services: Service[] = [
         short: 'We connect applications and automate administrative and business operations.',
         seoTitle: 'Business process automation · RESUELVE INTELLECT',
         seoDescription:
-          'Business automation: we connect your applications and automate invoices, onboarding, reports and admin tasks. Automation agency in Barcelona and Dubai.',
+          'Business automation: we connect your applications and automate invoices, onboarding, reports and admin tasks. Automation agency in Barcelona, Spain.',
         problem:
           'Copying data from one system to another, preparing reports by hand or chasing approvals by email are daily, error-prone tasks.',
         problemPoints: [

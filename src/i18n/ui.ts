@@ -8,9 +8,9 @@ export const defaultLang: Lang = 'es';
 
 const es = {
   meta: {
-    homeTitle: 'RESUELVE INTELLECT · Agencia de inteligencia artificial y automatización en Barcelona y Dubái',
+    homeTitle: 'RESUELVE INTELLECT · Agencia de inteligencia artificial y automatización en Barcelona, España',
     homeDescription:
-      'Agencia de inteligencia artificial en Barcelona y Dubái. Agentes de IA para empresas, automatización de procesos, atención al cliente por WhatsApp y consultoría de IA para pymes, clínicas y grandes empresas.',
+      'Agencia de inteligencia artificial en Barcelona, España. Agentes de IA para empresas, automatización de procesos, atención al cliente por WhatsApp y consultoría de IA para pymes, clínicas y grandes empresas.',
     locale: 'es_ES',
   },
   a11y: {
@@ -39,7 +39,7 @@ const es = {
     ctaPrimary: 'Descubre qué podemos resolver',
     ctaSecondary: 'Solicita un diagnóstico gratuito',
     slogan: 'Los problemas cambian. Nosotros encontramos la solución.',
-    locations: 'Barcelona · Dubái',
+    locations: 'Barcelona · España',
     scroll: 'Desliza',
     canvasLabel:
       'Animación: sistemas empresariales (CRM, WhatsApp, correo, calendario, ERP, formularios) conectándose a un núcleo inteligente.',
@@ -193,14 +193,13 @@ const es = {
     ],
   },
   locations: {
-    eyebrow: 'Ubicaciones',
-    title: 'Dos sedes comerciales. Una visión internacional.',
+    eyebrow: 'Ubicación',
+    title: 'Desde España. Con visión internacional.',
     intro:
-      'Desde Barcelona y Dubái acompañamos a empresas de España, Latinoamérica, Oriente Medio y el resto del mundo. Trabajamos en español y en inglés, en remoto o presencialmente.',
-    bcn: { city: 'Barcelona', country: 'España', d: 'Base para España, Europa y Latinoamérica.' },
-    dxb: { city: 'Dubái', country: 'Emiratos Árabes Unidos', d: 'Base para Oriente Medio y el mercado internacional.' },
-    markets: ['España', 'Latinoamérica', 'Europa', 'Oriente Medio', 'Internacional'],
-    mapLabel: 'Mapa estilizado con las sedes de Barcelona y Dubái conectadas con Latinoamérica.',
+      'Desde Barcelona acompañamos a empresas de España, Latinoamérica y el resto del mundo. Trabajamos en español y en inglés, en remoto o presencialmente.',
+    bcn: { city: 'Barcelona', country: 'España', d: 'Nuestra sede comercial. Desde aquí trabajamos con empresas de España, Europa, Latinoamérica y el mercado internacional.' },
+    markets: ['España', 'Latinoamérica', 'Europa', 'Internacional'],
+    mapLabel: 'Mapa estilizado con la sede de Barcelona conectada con Europa y Latinoamérica.',
   },
   contact: {
     eyebrow: 'Contacto',
@@ -314,9 +313,9 @@ export type UI = typeof es;
 
 const en: UI = {
   meta: {
-    homeTitle: 'RESUELVE INTELLECT · AI & Automation Agency in Barcelona and Dubai',
+    homeTitle: 'RESUELVE INTELLECT · AI & Automation Agency in Barcelona, Spain',
     homeDescription:
-      'Artificial intelligence agency in Barcelona and Dubai. AI agents for business, process automation, WhatsApp customer service automation and AI consulting for SMEs, clinics and enterprises.',
+      'Artificial intelligence agency in Barcelona, Spain. AI agents for business, process automation, WhatsApp customer service automation and AI consulting for SMEs, clinics and enterprises.',
     locale: 'en_US',
   },
   a11y: {
@@ -345,7 +344,7 @@ const en: UI = {
     ctaPrimary: 'See what we can solve',
     ctaSecondary: 'Request a free assessment',
     slogan: 'Problems change. We find the solution.',
-    locations: 'Barcelona · Dubai',
+    locations: 'Barcelona · Spain',
     scroll: 'Scroll',
     canvasLabel:
       'Animation: business systems (CRM, WhatsApp, email, calendar, ERP, forms) connecting to an intelligent core.',
@@ -499,14 +498,13 @@ const en: UI = {
     ],
   },
   locations: {
-    eyebrow: 'Locations',
-    title: 'Two commercial hubs. One international vision.',
+    eyebrow: 'Location',
+    title: 'Based in Spain. With an international vision.',
     intro:
-      'From Barcelona and Dubai we work with businesses in Spain, Latin America, the Middle East and worldwide. We work in Spanish and English, remotely or on-site.',
-    bcn: { city: 'Barcelona', country: 'Spain', d: 'Hub for Spain, Europe and Latin America.' },
-    dxb: { city: 'Dubai', country: 'United Arab Emirates', d: 'Hub for the Middle East and international markets.' },
-    markets: ['Spain', 'Latin America', 'Europe', 'Middle East', 'International'],
-    mapLabel: 'Stylised map showing the Barcelona and Dubai hubs connected with Latin America.',
+      'From Barcelona we work with businesses in Spain, Latin America and worldwide. We work in Spanish and English, remotely or on-site.',
+    bcn: { city: 'Barcelona', country: 'Spain', d: 'Our commercial base. From here we work with businesses in Spain, Europe, Latin America and international markets.' },
+    markets: ['Spain', 'Latin America', 'Europe', 'International'],
+    mapLabel: 'Stylised map showing the Barcelona base connected with Europe and Latin America.',
   },
   contact: {
     eyebrow: 'Contact',

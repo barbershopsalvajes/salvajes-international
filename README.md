@@ -3,7 +3,7 @@
 > «Los problemas cambian. Nosotros encontramos la solución.»
 
 Web bilingüe (ES/EN) de la agencia de inteligencia artificial, agentes y
-automatización **RESUELVE INTELLECT** (Barcelona · Dubái).
+automatización **RESUELVE INTELLECT** (Barcelona, España).
 
 ## Stack
 

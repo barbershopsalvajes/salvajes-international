@@ -17,7 +17,7 @@ const og = `<!doctype html><html><body style="margin:0;width:1200px;height:630px
 <div style="width:64px;height:64px">${favicon.replace('<svg ', '<svg width="64" height="64" ')}</div>
 <div style="font-size:26px;letter-spacing:.3em"><b>RESUELVE</b> <span style="font-weight:300;color:#ff8a3d">INTELLECT</span></div></div>
 <div style="position:absolute;left:80px;top:220px;font-size:66px;font-weight:650;letter-spacing:-.04em;line-height:1.02;max-width:900px">No necesitas más herramientas.<br><span style="background:linear-gradient(100deg,#fff,#ff8a3d 60%,#ff5a1f);-webkit-background-clip:text;color:transparent">Necesitas soluciones inteligentes.</span></div>
-<div style="position:absolute;left:80px;bottom:72px;font-size:22px;color:#a3a3a8;letter-spacing:.12em;text-transform:uppercase;font-family:ui-monospace,monospace">IA · Agentes · Automatización — Barcelona · Dubái</div>
+<div style="position:absolute;left:80px;bottom:72px;font-size:22px;color:#a3a3a8;letter-spacing:.12em;text-transform:uppercase;font-family:ui-monospace,monospace">IA · Agentes · Automatización — Barcelona · España</div>
 </body></html>`;
 
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });

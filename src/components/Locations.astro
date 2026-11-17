@@ -45,7 +45,6 @@ for (let lat = LAT_TOP; lat >= LAT_BOT; lat -= 2.6) {
   }
 }
 const bcn = proj(2.17, 41.39);
-const dxb = proj(55.27, 25.2);
 const latam = [proj(-99.13, 19.43), proj(-74.07, 4.71), proj(-58.38, -34.6), proj(-70.65, -33.45)];
 const arc = (a: P, b: P, lift = 0.28) => {
   const mx = (a[0] + b[0]) / 2;
@@ -78,19 +77,17 @@ const r1 = (n: number) => n.toFixed(1);
         <g fill="rgba(255,255,255,0.16)">
           {dots.map(([x, y]) => <circle cx={r1(x)} cy={r1(y)} r="1.7" />)}
         </g>
-        {latam.map((p) => <path class="arc arc--soft" d={arc(bcn, p, 0.22)} />)}
-        <path class="arc arc--main" d={arc(bcn, dxb, 0.35)} />
+        {latam.map((p) => <path class="arc arc--main" d={arc(bcn, p, 0.22)} />)}
         {latam.map((p) => <circle cx={r1(p[0])} cy={r1(p[1])} r="3" class="node-soft" />)}
         {
           [
-            { p: bcn, label: 'BARCELONA', dx: -14, anchor: 'end' },
-            { p: dxb, label: lang === 'es' ? 'DUBÁI' : 'DUBAI', dx: 14, anchor: 'start' },
+            { p: bcn, label: lang === 'es' ? 'BARCELONA · ESPAÑA' : 'BARCELONA · SPAIN', dx: 16, anchor: 'start' },
           ].map(({ p, label, dx, anchor }) => (
             <g class="pin">
               <circle cx={r1(p[0])} cy={r1(p[1])} r="34" fill="url(#pin-glow)" />
               <circle cx={r1(p[0])} cy={r1(p[1])} r="10" class="pin-ring" />
               <circle cx={r1(p[0])} cy={r1(p[1])} r="5" fill="#ff6a2b" stroke="#060607" stroke-width="2" />
-              <text x={r1(p[0] + dx)} y={r1(p[1] - 12)} text-anchor={anchor} class="pin-label">{label}</text>
+              <text x={r1(p[0] + dx)} y={r1(p[1] - 16)} text-anchor={anchor} class="pin-label">{label}</text>
             </g>
           ))
         }
@@ -99,7 +96,7 @@ const r1 = (n: number) => n.toFixed(1);
 
     <div class="loc-cards">
       {
-        [ui.bcn, ui.dxb].map((c, i) => (
+        [ui.bcn].map((c, i) => (
           <article class="card card--spot loc reveal" style={`--d:${i}`}>
             <span class="icon-tile"><Icon name="pin" /></span>
             <div>
@@ -183,7 +180,7 @@ const r1 = (n: number) => n.toFixed(1);
   }
   .loc-cards {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 18px;
     margin-top: 18px;
   }
